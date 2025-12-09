@@ -71,7 +71,7 @@ export default function ProductDetailsPage() {
       quantity: "1",
     }).toString();
 
-    router.push(`/checkout?${query}`);
+    router.push(`/checkout_client?${query}`);
   };
 
   return (

@@ -90,7 +90,7 @@ export default function CartPage() {
       return;
     }
 
-    router.push("/checkout"); // Or pass cart info if needed
+    router.push("/checkout_client"); // Or pass cart info if needed
   };
 
   if (loading) return <p style={{ padding: 20 }}>Loading cart...</p>;
