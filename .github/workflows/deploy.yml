@@ -1,0 +1,54 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Next.js
+        run: npm run build
+
+      - name: Export Static Build (Optional for static hosting)
+        run: npm run export
+
+      - name: Copy Files to VPS
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: 22
+          script: |
+            cd /var/www/frontend
+            rm -rf *
+            # Copy build files
+            mkdir -p /var/www/frontend
+            # Use scp or rsync for better transfer
+            # Assuming files already transferred via SSH Action
+            mv /tmp/build/* /var/www/frontend
+
+      - name: Restart Frontend PM2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: 22
+          script: |
+            pm2 describe frontend || pm2 start npm --name "frontend" -- start
+            pm2 restart frontend
