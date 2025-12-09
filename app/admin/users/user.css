@@ -1,0 +1,59 @@
+.users-container {
+  padding: 20px;
+}
+
+.users-container h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.users-table th,
+.users-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.status.active {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.status.blocked {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.btn {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #fff;
+}
+
+.btn.block {
+  background: #dc3545;
+}
+
+.btn.activate {
+  background: #28a745;
+}
+
+@media (max-width: 768px) {
+  .users-table th,
+  .users-table td {
+    font-size: 14px;
+    padding: 10px;
+  }
+}

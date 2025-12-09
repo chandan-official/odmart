@@ -1,0 +1,151 @@
+.pd-container {
+  width: 100%;
+  padding: 30px;
+  display: flex;
+  gap: 40px;
+  font-family: "Outfit", sans-serif;
+  background: #f2f4f7;
+}
+
+/* LEFT: IMAGE GALLERY */
+.pd-gallery {
+  flex: 1;
+}
+
+.pd-main-img img {
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pd-thumbnails {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.pd-thumb {
+  background: #fff;
+  padding: 6px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.25s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.pd-thumb:hover {
+  transform: scale(1.08);
+}
+
+/* RIGHT SIDE */
+.pd-details {
+  flex: 1;
+}
+
+.pd-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.pd-rating {
+  font-size: 1.1rem;
+  color: #444;
+}
+
+.pd-rating span {
+  opacity: 0.7;
+}
+
+.pd-stock {
+  color: green;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.pd-price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #3c7aff;
+  margin: 10px 0;
+}
+
+.pd-old-price {
+  margin-left: 10px;
+  text-decoration: line-through;
+  font-size: 1.2rem;
+  opacity: 0.7;
+}
+
+.pd-discount {
+  margin-left: 10px;
+  background: #ff4848;
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.pd-desc {
+  margin: 20px 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.pd-features {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.pd-features li {
+  margin: 6px 0;
+  font-size: 1rem;
+  padding-left: 10px;
+  border-left: 3px solid #3c7aff;
+}
+
+/* BUTTONS */
+.pd-btn-group {
+  display: flex;
+  gap: 15px;
+}
+
+.pd-buy-now,
+.pd-add-cart {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.pd-buy-now {
+  background: #000;
+  color: #fff;
+}
+
+.pd-add-cart {
+  background: #3c7aff;
+  color: #fff;
+}
+
+.pd-add-cart:hover {
+  background: #1f5eea;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .pd-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .pd-thumbnails {
+    justify-content: center;
+  }
+
+  .pd-btn-group {
+    justify-content: center;
+  }
+}
