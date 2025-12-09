@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import "../../styles/checkout.css";
@@ -28,64 +26,57 @@ interface Address {
   postalCode: string;
   country: string;
   phone: string;
-  text?: string; // formatted text
+  text?: string;
 }
 
 export default function CheckoutPage() {
   const searchParams = useSearchParams();
 
-  const buyNowProduct = searchParams.get("id")
-    ? [
-        {
-          _id: searchParams.get("id")!,
-          name: searchParams.get("name")!,
-          price: Number(searchParams.get("price")!),
-          qty: Number(searchParams.get("quantity")!),
-          image: searchParams.get("image") || "/placeholder.png",
-          product: { _id: searchParams.get("id")! },
-        },
-      ]
-    : [];
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [cart, setCart] = useState<CartItem[]>(buyNowProduct);
-  const [loading, setLoading] = useState(buyNowProduct.length === 0);
-
-  // ---------------------------
-  // FETCH CART IF NOT BUY NOW
-  // ---------------------------
   useEffect(() => {
-    if (buyNowProduct.length > 0) return;
+    const buyNowProduct = searchParams.get("id")
+      ? [
+          {
+            _id: searchParams.get("id")!,
+            name: searchParams.get("name")!,
+            price: Number(searchParams.get("price")!),
+            qty: Number(searchParams.get("quantity")!),
+            image: searchParams.get("image") || "/placeholder.png",
+            product: { _id: searchParams.get("id")! },
+          },
+        ]
+      : [];
 
-    const fetchCart = async () => {
-      try {
-        const token = localStorage.getItem("authToken");
-        const res = await API.get("/cart/getCart", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setCart(res.data.items || []);
-      } catch (err) {
-        console.error("Error fetching cart:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (buyNowProduct.length > 0) {
+      setCart(buyNowProduct);
+      setLoading(false);
+    } else {
+      const fetchCart = async () => {
+        try {
+          const token = localStorage.getItem("authToken");
+          const res = await API.get("/cart/getCart", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setCart(res.data.items || []);
+        } catch (err) {
+          console.error("Error fetching cart:", err);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchCart();
+    }
+  }, [searchParams]);
 
-    fetchCart();
-  }, []);
-
-  // ---------------------------
-  // PRICE CALCULATION
-  // ---------------------------
   const deliveryCharge = 0;
   const discount = 0;
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.qty, 0);
   const totalPayable = subtotal + deliveryCharge - discount;
 
-  // ---------------------------
-  // ADDRESSES
-  // ---------------------------
   const [addresses, setAddresses] = useState<Address[]>([]);
-  const [selectedAddress, setSelectedAddress] = useState<string>("");
+  const [selectedAddress, setSelectedAddress] = useState("");
 
   const fetchAddresses = async () => {
     setLoading(true);
@@ -94,8 +85,6 @@ export default function CheckoutPage() {
       const res = await API.get(apiRoutes.address.list, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      // Map addresses to display text
       const mapped: Address[] = (res.data.addresses || []).map((addr: any) => ({
         ...addr,
         text: `${addr.label || "Address"}, ${addr.street}, ${addr.city}, ${
@@ -116,9 +105,6 @@ export default function CheckoutPage() {
     fetchAddresses();
   }, []);
 
-  // ---------------------------
-  // NEW ADDRESS FORM
-  // ---------------------------
   const [showModal, setShowModal] = useState(false);
   const initialAddress = {
     label: "",
@@ -129,12 +115,14 @@ export default function CheckoutPage() {
     country: "",
     phone: "",
   };
+
   const [newAddress, setNewAddress] = useState(initialAddress);
 
   const handleAddAddress = async () => {
     const missingFields = Object.keys(newAddress).filter(
       (key) => !newAddress[key as keyof typeof newAddress]
     );
+
     if (missingFields.length > 0) {
       alert("Please fill all required fields (*)");
       return;
@@ -148,30 +136,26 @@ export default function CheckoutPage() {
 
       setNewAddress(initialAddress);
       setShowModal(false);
-      fetchAddresses(); // refresh list
+      fetchAddresses();
     } catch (err) {
       console.error("Add address failed:", err);
       alert("Failed to add address. Try again.");
     }
   };
 
-  // ---------------------------
-  // CHECKOUT
-  // ---------------------------
   const handleCheckout = async () => {
     if (cart.length === 0) {
       alert("Your cart is empty!");
       return;
     }
+    const selected = addresses.find((addr) => addr._id === selectedAddress);
+    if (!selected) {
+      alert("Please select a delivery address");
+      return;
+    }
 
     try {
       const token = localStorage.getItem("authToken");
-
-      const selected = addresses.find((addr) => addr._id === selectedAddress);
-      if (!selected) {
-        alert("Please select a delivery address");
-        return;
-      }
 
       const payload = {
         items: cart.map((item) => ({
@@ -200,9 +184,7 @@ export default function CheckoutPage() {
   if (loading) return <p style={{ padding: 20 }}>Loading checkout...</p>;
 
   return (
-    <div className="co-container">
-      {" "}
-      <h1 className="co-title">Checkout</h1>
+    <div className="checkout-page">
       {/* Order Summary */}
       <div className="co-section">
         <h2 className="co-subtitle">Order Summary</h2>
@@ -222,6 +204,7 @@ export default function CheckoutPage() {
           </div>
         ))}
       </div>
+
       {/* Price Details */}
       <div className="co-section">
         <h2 className="co-subtitle">Price Details</h2>
@@ -242,6 +225,7 @@ export default function CheckoutPage() {
           <span>₹{totalPayable}</span>
         </div>
       </div>
+
       {/* Addresses */}
       <div className="co-section">
         <h2 className="co-subtitle">Delivery Address</h2>
@@ -266,7 +250,8 @@ export default function CheckoutPage() {
           + Add New Address
         </button>
       </div>
-      {/* Payment Method */}
+
+      {/* Payment */}
       <div className="co-section">
         <h2 className="co-subtitle">Payment Method</h2>
         <label className="co-radio">
@@ -274,16 +259,18 @@ export default function CheckoutPage() {
           <span>Cash on Delivery (COD)</span>
         </label>
       </div>
+
       {/* Place Order */}
       <button className="co-place-btn" onClick={handleCheckout}>
         Place Order (₹{totalPayable})
       </button>
-      {/* Modal for New Address */}
+
+      {/* New Address Modal */}
       {showModal && (
         <div className="co-modal">
           <div className="co-modal-box">
             <h2 className="co-modal-title">Add New Address</h2>
-            {Object.keys(newAddress).map((key) => (
+            {Object.keys(initialAddress).map((key) => (
               <div className="co-input-group" key={key}>
                 <label>{key}</label>
                 <input
