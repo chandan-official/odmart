@@ -1,13 +1,12 @@
-name: Frontend CI/CD
+name: Deploy Frontend
 
 on:
   push:
     branches: [main]
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -18,37 +17,20 @@ jobs:
           node-version: 20
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build Next.js
         run: npm run build
 
-      - name: Export Static Build (Optional for static hosting)
-        run: npm run export
-
-      - name: Copy Files to VPS
+      - name: Copy files to VPS via SSH
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.HOSTINGER_HOST }}
-          username: ${{ secrets.HOSTINGER_USER }}
-          key: ${{ secrets.HOSTINGER_SSH_KEY }}
-          port: 22
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /var/www/frontend
-            rm -rf *
-            # Copy build files
-            mkdir -p /var/www/frontend
-            # Use scp or rsync for better transfer
-            # Assuming files already transferred via SSH Action
-            mv /tmp/build/* /var/www/frontend
+            cd /var/www/ecommerce-frontend
+            npm ci
+            npm run build
+            pm2 restart ecommerce-frontend || pm2 start npm --name "ecommerce-frontend" -- start
 
-      - name: Restart Frontend PM2
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.HOSTINGER_HOST }}
-          username: ${{ secrets.HOSTINGER_USER }}
-          key: ${{ secrets.HOSTINGER_SSH_KEY }}
-          port: 22
-          script: |
-            pm2 describe frontend || pm2 start npm --name "frontend" -- start
-            pm2 restart frontend
