@@ -1,8 +1,8 @@
+"use client";
 import "../styles/globals.css";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
-import Grid1 from "@/components/grid1";
-import Grid2 from "@/components/grid2";
+import { AuthProvider } from "@/components/AuthContext";
 
 export default function RootLayout({
   children,
@@ -12,9 +12,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
+        <AuthProvider>
+          <Navbar />
+          <main>{children}</main>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

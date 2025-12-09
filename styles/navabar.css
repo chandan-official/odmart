@@ -88,3 +88,41 @@
     font-size: 1.1rem;
   }
 }
+
+/* Make Logout button look like links */
+.navbar__link-button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.35rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 20px;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.navbar__link-button:hover {
+  transform: scale(1.15);
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .navbar__link-button {
+    font-size: 1.15rem;
+    margin-left: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar__link-button {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar__link-button {
+    font-size: 1.1rem;
+  }
+}

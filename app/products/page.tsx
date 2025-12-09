@@ -1,50 +1,84 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Image from "next/image";
-import Grid1 from "@/components/grid1";
-import Link from "next/link"; // ✅ Added
+
+import Link from "next/link";
 import "../../styles/products.css";
 import { useEffect, useRef, useState } from "react";
 import { MdFavorite, MdOutlineFavoriteBorder } from "react-icons/md";
+import { api } from "../../lib/api";
+
+interface ProductImage {
+  url: string;
+  public_id?: string;
+}
+
+interface Product {
+  _id: string;
+  name: string;
+  description?: string;
+  price: number;
+  compareAtPrice?: number;
+  discount?: string;
+  rating?: number;
+  stock: number;
+  productImageurls?: ProductImage[];
+}
 
 export default function ProductsPage() {
-  const [liked, setLiked] = useState<{ [key: number]: boolean }>({});
-  const [products, setProducts] = useState<any[]>([]);
+  const [liked, setLiked] = useState<{ [key: string]: boolean }>({});
+  const [products, setProducts] = useState<Product[]>([]);
+  const [mainImages, setMainImages] = useState<{ [key: string]: string }>({});
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  const toggleLike = (id: number) => {
+  const toggleLike = (id: string) => {
     setLiked((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // GENERATE DUMMY PRODUCTS FOR DEMO
-  const generateProducts = (pageNumber: number) => {
-    const start = (pageNumber - 1) * 12;
-    return Array.from({ length: 12 }).map((_, i) => ({
-      id: start + i + 1,
-      name: `Running Shoes ${start + i + 1}`,
-      desc: "Premium comfort & durability",
-      price: 999 + i * 100,
-      oldPrice: 1599 + i * 100,
-      discount: "-30%",
-      rating: (3.5 + (i % 2)).toFixed(1),
-      stock: i % 2 === 0 ? "In Stock" : "Only Few Left!",
-      image: "/shoe.jpeg",
-    }));
+  const fetchProducts = async (pageNumber: number) => {
+    if (!hasMore) return;
+    setLoading(true);
+
+    try {
+      const res = await api.getProducts(pageNumber, 12);
+      const newProducts: Product[] = res.data.products;
+
+      if (!newProducts || newProducts.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      setProducts((prev) => [...prev, ...newProducts]);
+
+      // Set initial main image for each product
+      newProducts.forEach((p) => {
+        if (p.productImageurls && p.productImageurls.length > 0) {
+          setMainImages((prev) => ({
+            ...prev,
+            [p._id]: p.productImageurls![0].url,
+          }));
+        }
+      });
+    } catch (err) {
+      console.error("Product fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // LOAD INITIAL PRODUCTS
   useEffect(() => {
-    setProducts(generateProducts(1));
+    fetchProducts(1);
   }, []);
 
-  // INTERSECTION OBSERVER (Infinite Scroll)
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
+        if (entries[0].isIntersecting && !loading && hasMore) {
           setPage((prev) => prev + 1);
         }
       },
@@ -56,90 +90,149 @@ export default function ProductsPage() {
     return () => {
       if (loaderRef.current) observer.unobserve(loaderRef.current);
     };
-  }, []);
+  }, [loading, hasMore]);
 
-  // LOAD NEW PRODUCTS WHEN PAGE INCREASES
   useEffect(() => {
-    if (page === 1) return;
-
-    const newProducts = generateProducts(page);
-    setProducts((prev) => [...prev, ...newProducts]);
+    if (page > 1) fetchProducts(page);
   }, [page]);
+
+  const handleThumbnailHover = (
+    e: React.MouseEvent,
+    productId: string,
+    imageUrl: string
+  ) => {
+    // Stop link navigation when hovering over the thumbnail
+    e.preventDefault();
+    setMainImages((prev) => ({
+      ...prev,
+      [productId]: imageUrl,
+    }));
+  };
 
   return (
     <div className="products-page">
-      {/* CATEGORY SLIDER */}
-      <div className="category-slider">
-        <Grid1 />
-      </div>
-
-      {/* SEARCH + FILTER BAR */}
       <div className="search-filter-bar">
         <input
           type="text"
           className="search-input"
           placeholder="Search for products…"
         />
-
         <select className="filter-select">
           <option>Sort By</option>
-          <option>Price: Low to High</option>
-          <option>Price: High to Low</option>
-          <option>Newest</option>
-          <option>Popular</option>
+          <option value="price_asc">Price: Low to High</option>
+          <option value="price_desc">Price: High to Low</option>
+          <option value="newest">Newest</option>
+          <option value="popular">Popular</option>
         </select>
       </div>
 
-      {/* PRODUCT GRID */}
+      {/* --- Product Grid --- */}
       <div className="product-grid">
         {products.map((product) => (
           <Link
-            href={`/product_page?id=${product.id}`} // ✅ Redirect to product page
-            key={product.id}
+            href={`/product_page/${product._id}`}
+            key={product._id}
             className="product-link"
           >
             <div className="products-cards">
-              {/* IMAGE */}
-              <div className="product-img">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  width={260}
-                  height={200}
-                />
-              </div>
-
-              {/* INFO */}
-              <div className="product-info">
-                <div className="span-grp">
-                  <span>Limited Time Deal</span>
-                  <span className="badge">{product.discount}</span>
+              {/* Image and Thumbnails Section */}
+              <div className="product-image-container">
+                {/* Main Image */}
+                <div className="product-main-img">
+                  <Image
+                    src={mainImages[product._id] || "/placeholder.png"}
+                    alt={product.name}
+                    width={280}
+                    height={200}
+                    priority={true}
+                  />
                 </div>
 
-                <h3>{product.name}</h3>
-                <p>{product.desc}</p>
+                {/* Thumbnails */}
+                {product.productImageurls &&
+                  product.productImageurls.length > 1 && (
+                    <div className="thumbnails-wrapper">
+                      {product.productImageurls?.slice(0, 4).map((img, idx) => (
+                        <div
+                          key={idx}
+                          className={`thumbnail ${
+                            mainImages[product._id] === img.url ? "active" : ""
+                          }`}
+                          onMouseEnter={(e) =>
+                            handleThumbnailHover(e, product._id, img.url)
+                          }
+                        >
+                          <Image
+                            src={img.url}
+                            alt={`${product.name} thumbnail ${idx + 1}`}
+                            width={40}
+                            height={40}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+              </div>
 
-                <p className="price">
-                  ₹{product.price}
-                  <span className="strike-through">₹{product.oldPrice}</span>
-                  <span className="discount">{product.discount}</span>
+              {/* Product Info Section */}
+              <div className="product-info">
+                <h3 className="product-title">{product.name}</h3>
+
+                {/* Product Description */}
+                <p className="product-description">
+                  {product.description ||
+                    "A high-quality item offering premium comfort and durability."}
                 </p>
 
-                <p>⭐ {product.rating}</p>
-                <p className="stock">{product.stock}</p>
+                {/* Price and Discount Details */}
+                <div className="price-details">
+                  <p className="current-price">₹{product.price}</p>
 
+                  {/* Compare price with faded color and parentheses */}
+                  {product.compareAtPrice &&
+                    product.compareAtPrice > product.price && (
+                      <span className="compare-price-wrapper">
+                        (
+                        <span className="strike-through faded-price">
+                          ₹{product.compareAtPrice}
+                        </span>
+                        )
+                      </span>
+                    )}
+
+                  {product.discount && (
+                    <span className="discount-tag">{product.discount}</span>
+                  )}
+                </div>
+
+                {/* Rating and Stock */}
+                <div className="rating-stock">
+                  <p className="rating-text">
+                    ⭐ {product.rating?.toFixed(1) || 4.5}
+                  </p>
+                  <p
+                    className={`stock-status ${
+                      product.stock > 0 ? "in-stock" : "out-of-stock"
+                    }`}
+                  >
+                    {product.stock > 0 ? "In Stock" : "Out of Stock"}
+                  </p>
+                </div>
+
+                {/* Action Buttons */}
                 <div className="btn-grp">
                   <button className="add-to-cart">Shop Now</button>
+
                   <button
                     className={`wishlist-btn ${
-                      liked[product.id] ? "liked" : ""
+                      liked[product._id] ? "liked" : ""
                     }`}
                     onClick={(e) => {
-                      e.preventDefault(); // ❗ Prevent page redirect on heart click
-                      toggleLike(product.id);
+                      e.preventDefault();
+                      toggleLike(product._id);
                     }}
                   >
-                    {liked[product.id] ? (
+                    {liked[product._id] ? (
                       <MdFavorite />
                     ) : (
                       <MdOutlineFavoriteBorder />
@@ -152,11 +245,14 @@ export default function ProductsPage() {
         ))}
       </div>
 
-      {/* LOADER SENTINEL FOR INFINITE SCROLL */}
+      {/* Infinite Scroll Loader */}
       <div ref={loaderRef} style={{ padding: "40px", textAlign: "center" }}>
-        <span style={{ fontSize: "16px", opacity: "0.6" }}>
-          Loading more products…
-        </span>
+        {loading && hasMore && (
+          <span className="loading-text">Loading more products…</span>
+        )}
+        {!hasMore && (
+          <span className="all-loaded-text">🎉 All products loaded</span>
+        )}
       </div>
     </div>
   );

@@ -213,3 +213,124 @@
 .googleIcon {
   flex-shrink: 0;
 }
+
+@media (max-width: 992px) {
+  .authContainer {
+    height: auto;
+    flex-direction: column;
+    max-width: 700px;
+  }
+
+  .leftPanel,
+  .rightPanel {
+    width: 100%;
+    height: auto;
+    padding: 2rem;
+    border-radius: 20px;
+  }
+
+  .leftPanel h1 {
+    font-size: 2rem;
+  }
+
+  .leftPanel h2 {
+    font-size: 1rem;
+  }
+
+  .formBox {
+    width: 90%;
+  }
+}
+
+/* ----------- Small Screens (Phones) ----------- */
+@media (max-width: 768px) {
+  .authWrapper {
+    padding: 2rem 1rem;
+  }
+
+  .authContainer {
+    width: 100%;
+    height: auto;
+    box-shadow: none;
+    padding: 0;
+    flex-direction: column;
+  }
+
+  .leftPanel,
+  .rightPanel {
+    border-radius: 15px;
+    padding: 1.5rem;
+  }
+
+  .leftPanel h1 {
+    font-size: 1.8rem;
+  }
+
+  .leftPanel h2 {
+    font-size: 0.95rem;
+  }
+
+  .formBox h2 {
+    font-size: 1.5rem;
+  }
+
+  .form input,
+  .form button,
+  .googleBtn {
+    padding: 0.7rem;
+  }
+
+  .divider {
+    margin: 1rem 0;
+  }
+}
+
+/* ----------- Extra Small Screens (Small Phones) ----------- */
+@media (max-width: 480px) {
+  .authWrapper {
+    padding: 1.5rem 0.5rem;
+  }
+
+  .leftPanel {
+    padding: 1.2rem;
+  }
+
+  .leftPanel h1 {
+    font-size: 1.6rem;
+  }
+
+  .leftPanel h2 {
+    font-size: 0.85rem;
+  }
+
+  .rightPanel {
+    padding: 1.2rem;
+  }
+
+  .formBox {
+    width: 100%;
+  }
+
+  .form input,
+  .form button,
+  .googleBtn {
+    padding: 0.65rem;
+    font-size: 0.9rem;
+  }
+
+  .googleBtn {
+    gap: 6px;
+  }
+
+  .authContainer {
+    border-radius: 12px;
+  }
+}
+
+/* ----------- Fix Signup Mode on Mobile ----------- */
+@media (max-width: 768px) {
+  .signupMode .leftPanel,
+  .signupMode .rightPanel {
+    transform: translateX(0); /* Disable sliding animation on small screens */
+  }
+}

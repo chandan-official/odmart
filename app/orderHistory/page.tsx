@@ -1,103 +1,201 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
-import { useEffect, useState } from "react";
-import "../../styles/order.css";
+
+import { useState, useEffect } from "react";
+import "../../styles/order-details.css";
+import { API } from "../../lib/api";
+
+interface OrderItem {
+  productId: string; // just store the ID
+  name: string;
+  image?: string;
+  quantity: number;
+  price: number;
+}
+
+interface Address {
+  fullName: string;
+  phone: string;
+  city: string;
+  state: string;
+  pincode: string;
+  street: string;
+  landmark?: string;
+}
 
 interface Order {
   _id: string;
-  date: string;
-  total: number;
-  status: "Processing" | "Shipped" | "Delivered" | "Cancelled";
-  paymentStatus: "Paid" | "Pending" | "Failed";
-  items: { name: string; quantity: number; price: number }[];
+  items: OrderItem[];
+  totalAmount: number;
+  status:
+    | "pending"
+    | "confirmed"
+    | "packed"
+    | "in_transit"
+    | "delivered"
+    | "cancelled";
+  statusHistory: { status: string; timestamp: string }[];
+  paymentInfo: { method: string; transactionId?: string; status?: string };
+  address: Address;
+  createdAt: string;
 }
 
 export default function OrderHistoryPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const handleView = () => {
-    alert("Viewing order details (dummy)...");
-    window.location.href = "/order-detail";
-  };
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [cancelReason, setCancelReason] = useState("");
 
+  // Fetch orders using auth token
   useEffect(() => {
-    // 🧩 Dummy data simulating backend response
-    setTimeout(() => {
-      setOrders([
-        {
-          _id: "ORD123456",
-          date: "2025-10-25",
-          total: 3298,
-          status: "Delivered",
-          paymentStatus: "Paid",
-          items: [
-            { name: "Wireless Mouse", quantity: 1, price: 999 },
-            { name: "Keyboard", quantity: 1, price: 2299 },
-          ],
-        },
-        {
-          _id: "ORD789012",
-          date: "2025-10-20",
-          total: 1499,
-          status: "Processing",
-          paymentStatus: "Pending",
-          items: [{ name: "Bluetooth Speaker", quantity: 1, price: 1499 }],
-        },
-      ]);
-      setLoading(false);
-    }, 800);
+    const fetchOrders = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        const res = await API.get("/orders/user", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setOrders(res.data);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load orders");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
   }, []);
 
-  if (loading) return <p className="loading">Loading your orders...</p>;
+  const handleConfirmCancel = async () => {
+    if (!cancelReason.trim()) return alert("Please enter a reason!");
+    if (!selectedOrder) return alert("No order selected");
+
+    try {
+      const token = localStorage.getItem("authToken");
+      await API.put(
+        `/orders/cancel/${selectedOrder._id}`,
+        { reason: cancelReason },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      alert("Order cancelled!");
+      setOrders((prev) =>
+        prev.map((o) =>
+          o._id === selectedOrder._id ? { ...o, status: "cancelled" } : o
+        )
+      );
+
+      setShowCancelModal(false);
+      setSelectedOrder(null);
+      setCancelReason("");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to cancel order");
+    }
+  };
+
+  if (loading) return <p style={{ padding: 20 }}>Loading orders...</p>;
+  if (error) return <p>{error}</p>;
+  if (!orders.length) return <p>No orders found</p>;
 
   return (
-    <section className="orders-container">
-      <h2>📦 My Orders</h2>
+    <div className="od-container">
+      <h1 className="od-title">Your Orders</h1>
 
-      {orders.length === 0 ? (
-        <p className="no-orders">No orders found.</p>
-      ) : (
-        orders.map((order) => (
-          <div key={order._id} className="order-card">
-            <div className="order-header">
-              <div>
-                <h3>Order #{order._id}</h3>
-                <p>Date: {order.date}</p>
-              </div>
-              <div className="status-box">
-                <span className={`status ${order.status.toLowerCase()}`}>
-                  {order.status}
-                </span>
-                <span
-                  className={`payment ${order.paymentStatus.toLowerCase()}`}
-                >
-                  {order.paymentStatus}
-                </span>
-              </div>
-            </div>
+      {orders.map((order) => {
+        const subtotal = order.items.reduce(
+          (sum, item) => sum + (item.price || 0) * (item.quantity || 1),
+          0
+        );
+        const total = order.totalAmount || subtotal;
+        const canCancel = ["pending", "confirmed"].includes(order.status);
 
-            <div className="order-items">
-              {order.items.map((item, index) => (
-                <div key={index} className="order-item">
-                  <span>{item.name}</span>
-                  <span>
-                    {item.quantity} × ₹{item.price}
-                  </span>
+        return (
+          <div className="od-section" key={order._id}>
+            <h2 className="od-subtitle">Order #{order._id.slice(-6)}</h2>
+            <p className="od-date">
+              Placed on {new Date(order.createdAt).toDateString()}
+            </p>
+            <p className="od-status">Status: {order.status}</p>
+
+            <h3>Items</h3>
+            {order.items.map((item, i) => (
+              <div className="od-item" key={i}>
+                <img
+                  src={item.image || "/placeholder.png"}
+                  alt={item.name || "Item"}
+                  className="od-item-img"
+                />
+                <div>
+                  <p className="od-item-name">{item.name}</p>
+                  <p className="od-item-price">₹{item.price}</p>
+                  <p className="od-item-qty">Qty: {item.quantity}</p>
                 </div>
-              ))}
+              </div>
+            ))}
+
+            <h3>Bill Summary</h3>
+            <div className="od-row">
+              <span>Subtotal</span>
+              <span>₹{subtotal}</span>
+            </div>
+            <div className="od-row">
+              <span>Total Payable</span>
+              <span>₹{total}</span>
             </div>
 
-            <div className="order-footer">
-              <p>
-                <strong>Total:</strong> ₹{order.total.toLocaleString()}
-              </p>
-              <button className="btn-view" onClick={handleView}>
-                View Details
+            {canCancel && (
+              <button
+                className="od-cancel-btn"
+                onClick={() => {
+                  setSelectedOrder(order);
+                  setShowCancelModal(true);
+                }}
+              >
+                Cancel Order
+              </button>
+            )}
+          </div>
+        );
+      })}
+
+      {/* Cancel Modal */}
+      {showCancelModal && selectedOrder && (
+        <div className="od-modal">
+          <div className="od-modal-box">
+            <h3 className="od-modal-title">
+              Cancel Order #{selectedOrder._id.slice(-6)}
+            </h3>
+
+            <label className="od-modal-label">Reason *</label>
+            <textarea
+              className="od-modal-input"
+              placeholder="Why do you want to cancel?"
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+            />
+
+            <div className="od-modal-actions">
+              <button
+                className="od-modal-cancel"
+                onClick={() => setShowCancelModal(false)}
+              >
+                Close
+              </button>
+              <button
+                className="od-modal-confirm"
+                onClick={handleConfirmCancel}
+              >
+                Confirm Cancel
               </button>
             </div>
           </div>
-        ))
+        </div>
       )}
-    </section>
+    </div>
   );
 }

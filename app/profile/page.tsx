@@ -1,6 +1,7 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
+
 import { useEffect, useState } from "react";
+import { API, apiRoutes } from "../../lib/api";
 import "../../styles/profile.css";
 
 interface Address {
@@ -8,85 +9,114 @@ interface Address {
   street: string;
   city: string;
   state: string;
-  pincode: string;
+  postalCode: string;
+  country: string;
+  label?: string;
+  phone: string;
+}
+
+interface User {
+  name: string;
+  email: string;
+  phone: string;
+  addresses?: Address[];
 }
 
 export default function ProfilePage() {
-  const [user, setUser] = useState({
-    name: "Chandan Jha",
-    email: "example@mail.com",
-    phone: "9876543210",
-  });
-
+  const [user, setUser] = useState<User | null>(null);
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [form, setForm] = useState<Address>({
     street: "",
     city: "",
     state: "",
-    pincode: "",
+    postalCode: "",
+    country: "",
+    label: "",
+    phone: "",
   });
   const [editing, setEditing] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // 🧩 Simulate Fetching Profile + Addresses
-  useEffect(() => {
+  // -----------------------------
+  // FETCH PROFILE & ADDRESSES
+  // -----------------------------
+  const fetchProfile = async () => {
     setLoading(true);
-    setTimeout(() => {
-      // Dummy "fetched" data
-      setUser({
-        name: "Chandan Jha",
-        email: "chandan@example.com",
-        phone: "9876543210",
-      });
-      setAddresses([
-        {
-          _id: "1",
-          street: "123 Main Street",
-          city: "Patna",
-          state: "Bihar",
-          pincode: "800001",
-        },
-        {
-          _id: "2",
-          street: "22 Tech Park Road",
-          city: "Bangalore",
-          state: "Karnataka",
-          pincode: "560001",
-        },
-      ]);
+    try {
+      const res = await API.get(apiRoutes.profile.get);
+      setUser(res.data);
+    } catch (err) {
+      console.error("Profile fetch error:", err);
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
+  };
+
+  const fetchAddresses = async () => {
+    setLoading(true);
+    try {
+      const res = await API.get(apiRoutes.address.list);
+      console.log("Addresses response:", res.data); // debug
+      setAddresses(res.data.addresses || []); // or res.data if the endpoint returns array directly
+    } catch (err) {
+      console.error("Addresses fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+    fetchAddresses();
   }, []);
 
+  // -----------------------------
+  // HANDLE INPUT CHANGE
+  // -----------------------------
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // 🧠 Simulate Add / Update API
-  const handleSubmit = async (e: React.FormEvent) => {
+  // -----------------------------
+  // ADD / UPDATE ADDRESS
+  // -----------------------------
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
-    setTimeout(() => {
+    try {
       if (editing) {
-        // Update dummy record
-        setAddresses((prev) =>
-          prev.map((a) => (a._id === editing ? { ...form, _id: editing } : a))
-        );
-        setEditing(null);
+        // Update address
+        await API.put(apiRoutes.address.update(editing), form);
       } else {
-        // Add new dummy record
-        setAddresses((prev) => [
-          ...prev,
-          { ...form, _id: Date.now().toString() },
-        ]);
+        // Add new address
+        await API.post(apiRoutes.address.create, form);
       }
 
-      setForm({ street: "", city: "", state: "", pincode: "" });
+      // Reset form
+      setForm({
+        street: "",
+        city: "",
+        state: "",
+        postalCode: "",
+        country: "",
+        label: "",
+        phone: "",
+      });
+      setEditing(null);
+
+      // Refresh addresses
+      fetchProfile();
+    } catch (err) {
+      console.error("Save address error:", err);
+    } finally {
       setLoading(false);
-    }, 800);
+    }
   };
 
+  // -----------------------------
+  // LOAD ADDRESS INTO FORM FOR EDIT
+  // -----------------------------
   const handleEdit = (id: string) => {
     const addr = addresses.find((a) => a._id === id);
     if (addr) {
@@ -95,100 +125,134 @@ export default function ProfilePage() {
     }
   };
 
-  // 🗑️ Simulate Delete API
+  // -----------------------------
+  // DELETE ADDRESS
+  // -----------------------------
   const handleDelete = async (id: string) => {
     setLoading(true);
-    setTimeout(() => {
-      setAddresses((prev) => prev.filter((a) => a._id !== id));
+    try {
+      await API.delete(apiRoutes.address.delete(id));
+      fetchProfile();
+    } catch (err) {
+      console.error("Delete address error:", err);
+    } finally {
       setLoading(false);
-    }, 600);
+    }
   };
 
   return (
     <section className="profile-container">
+      {" "}
       <div className="profile-box">
-        <h2>My Profile </h2>
-
-        {loading ? (
+        {" "}
+        <h2>My Profile</h2>
+        {!user || loading ? (
           <p>Loading...</p>
         ) : (
           <div className="user-info">
+            {" "}
             <p>
               <strong>Name:</strong> {user.name}
-            </p>
+            </p>{" "}
             <p>
               <strong>Email:</strong> {user.email}
-            </p>
+            </p>{" "}
             <p>
               <strong>Phone:</strong> {user.phone}
-            </p>
+            </p>{" "}
           </div>
-        )}
+        )}{" "}
       </div>
-
       <div className="address-box">
         <h2>My Addresses 📍</h2>
 
         <form onSubmit={handleSubmit} className="address-form">
           <input
             type="text"
+            required
+            name="label"
+            placeholder="Label (Home, Work)"
+            value={form.label}
+            onChange={handleChange}
+          />
+          <input
+            type="text"
+            required
             name="street"
             placeholder="Street"
             value={form.street}
             onChange={handleChange}
-            required
           />
           <input
             type="text"
+            required
             name="city"
             placeholder="City"
             value={form.city}
             onChange={handleChange}
-            required
           />
           <input
             type="text"
+            required
             name="state"
             placeholder="State"
             value={form.state}
             onChange={handleChange}
-            required
           />
           <input
             type="text"
-            name="pincode"
-            placeholder="Pincode"
-            value={form.pincode}
-            onChange={handleChange}
             required
+            name="postalCode"
+            placeholder="Postal Code"
+            value={form.postalCode}
+            onChange={handleChange}
+          />
+          <input
+            type="text"
+            name="country"
+            placeholder="Country"
+            value={form.country}
+            onChange={handleChange}
+          />
+          <input
+            type="text"
+            required
+            name="phone"
+            placeholder="Phone Number"
+            value={form.phone}
+            onChange={handleChange}
           />
 
-          <button type="submit" className="btn-primary" disabled={loading}>
+          <button className="btn-primary" disabled={loading}>
             {editing ? "Update Address" : "Add Address"}
           </button>
         </form>
 
         <div className="address-list">
-          {addresses.length === 0 && (
-            <p className="no-address">No addresses added yet.</p>
-          )}
+          {addresses.length === 0 ? (
+            <p className="no-address">No addresses added.</p>
+          ) : (
+            addresses.map((addr) => (
+              <div key={addr._id} className="address-item">
+                <div>
+                  <p>{addr.street}</p>
+                  <p>
+                    {addr.city}, {addr.state} - {addr.postalCode}
+                  </p>
+                  <p>{addr.country}</p>
+                  {addr.label && <p>Label: {addr.label}</p>}
+                  <p>Phone: {addr.phone}</p>
+                </div>
 
-          {addresses.map((addr) => (
-            <div key={addr._id} className="address-item">
-              <div>
-                <p>{addr.street}</p>
-                <p>
-                  {addr.city}, {addr.state} - {addr.pincode}
-                </p>
+                <div className="actions">
+                  <button onClick={() => handleEdit(addr._id!)}>✏️ Edit</button>
+                  <button onClick={() => handleDelete(addr._id!)}>
+                    🗑️ Delete
+                  </button>
+                </div>
               </div>
-              <div className="actions">
-                <button onClick={() => handleEdit(addr._id!)}>✏️ Edit</button>
-                <button onClick={() => handleDelete(addr._id!)}>
-                  🗑️ Delete
-                </button>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </section>

@@ -15,7 +15,7 @@ export default function Footer() {
       <div className="footer-container">
         {/* Company Info */}
         <div className="footer-section about">
-          <h3>ShopEase</h3>
+          <h3>ODmart</h3>
           <p>
             Your trusted shopping partner for quality products at the best
             prices. Fast delivery, secure payments, and reliable service —
@@ -71,7 +71,7 @@ export default function Footer() {
       </div>
 
       <div className="footer-bottom">
-        <p>© {new Date().getFullYear()} ShopEase. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} ODmart. All rights reserved.</p>
       </div>
     </footer>
   );
