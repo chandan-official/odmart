@@ -1,0 +1,22 @@
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filter-bar button {
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #f8f8f8;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.filter-bar button:hover {
+  background: #0070f3;
+  color: white;
+  border-color: #0070f3;
+}

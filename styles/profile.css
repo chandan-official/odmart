@@ -1,0 +1,146 @@
+/* MAIN LAYOUT */
+.profile-container {
+  width: 92%;
+  max-width: 1100px;
+  margin: 30px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2.2rem;
+  font-family: "Outfit", sans-serif;
+}
+
+/* CARD WRAPPER */
+.profile-box,
+.address-box {
+  background: #ffffff;
+  padding: 25px 28px;
+  border-radius: 20px;
+  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e8e8e8;
+}
+
+.profile-box h2,
+.address-box h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: #1f1f1f;
+}
+
+/* USER INFO */
+.user-info p {
+  margin: 6px 0;
+  font-size: 1rem;
+  color: #333;
+}
+.user-info strong {
+  color: #3c7aff;
+}
+
+/* ADDRESS FORM */
+.address-form {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 15px;
+}
+
+.address-form input {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 2px solid #d9d9d9;
+  font-size: 0.95rem;
+  transition: 0.3s ease;
+  outline: none;
+  background: #fafafa;
+}
+
+.address-form input:focus {
+  border-color: #3c7aff;
+  box-shadow: 0 0 6px rgba(60, 122, 255, 0.3);
+  background: #fff;
+}
+
+/* ADD BUTTON */
+.btn-primary {
+  grid-column: 1 / -1;
+  padding: 14px 0;
+  background: #3c7aff;
+  border: none;
+  border-radius: 14px;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.btn-primary:hover {
+  background: #2e6df9;
+}
+
+.btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ADDRESS LIST */
+.address-list {
+  margin-top: 20px;
+}
+
+.address-item {
+  background: #ffffff;
+  padding: 18px 16px;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1.5px solid #e4e7eb;
+  transition: 0.25s ease;
+}
+
+.address-item:hover {
+  border-color: #3c7aff;
+  transform: translateY(-2px);
+}
+
+.address-item p {
+  margin: 3px 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+/* ACTION BUTTONS */
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.actions button {
+  background: #f0f3ff;
+  border: 1px solid #d1ddff;
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.actions button:hover {
+  background: #3c7aff;
+  color: #fff;
+  border-color: #3c7aff;
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+  .address-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .actions {
+    margin-top: 10px;
+  }
+}
