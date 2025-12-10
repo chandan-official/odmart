@@ -18,20 +18,28 @@ jobs:
           node-version: 20
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build Next.js
         run: npm run build
 
-      - name: Copy files to VPS via SSH
+      - name: Copy files to VPS and Deploy
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.HOSTINGER_HOST }}
           username: ${{ secrets.HOSTINGER_USER }}
           key: ${{ secrets.HOSTINGER_SSH_KEY }}
           script: |
-            cd /var/www/frontend
-            npm ci
+            cd /var/www
+            if [ ! -d "frontend" ]; then
+              git clone https://github.com/<your-org>/<your-frontend-repo>.git frontend
+            else
+              cd frontend
+              git pull origin main
+            fi
+            cd frontend
+            npm install
             npm run build
             pm2 restart frontend || pm2 start npm --name "frontend" -- start
+
 
