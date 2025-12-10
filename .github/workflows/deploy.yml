@@ -12,22 +12,26 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Copy files to VPS via SSH
+      - name: Install Dependencies & Build Locally
+        run: |
+          npm ci
+          npm run build
+
+      - name: Copy prebuilt frontend to VPS
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.HOSTINGER_HOST }}
           username: ${{ secrets.HOSTINGER_USER }}
           key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          source: ".next/**, public/**, package.json, package-lock.json, next.config.js"
+          target: "/var/www/frontend"
           script: |
             cd /var/www/frontend
-            # Make sure old build is removed
-            rm -rf .next
-            # Pull latest code
-            git pull origin main
-            # Install only prod dependencies (optional)
+            # Install only prod dependencies
             npm ci --omit=dev
-            # Start app using prebuilt .next
+            # Restart the app
             pm2 restart frontend || pm2 start npm --name "frontend" -- start
+
 
 
 
