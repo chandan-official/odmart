@@ -12,17 +12,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Build Next.js
-        run: npm run build
-
       - name: Copy files to VPS and Deploy
         uses: appleboy/ssh-action@v1
         with:
@@ -31,15 +20,13 @@ jobs:
           key: ${{ secrets.HOSTINGER_SSH_KEY }}
           script: |
             cd /var/www
+            # Ensure frontend folder exists
             if [ ! -d "frontend" ]; then
-              git clone https://github.com/<your-org>/<your-frontend-repo>.git frontend
-            else
-              cd frontend
-              git pull origin main
+              mkdir frontend
             fi
             cd frontend
-            npm install
-            npm run build
+            # Pull latest code (without building)
+            git pull origin main
+            # Restart PM2 with existing prebuilt files
             pm2 restart frontend || pm2 start npm --name "frontend" -- start
-
 
