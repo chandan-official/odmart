@@ -1,0 +1,287 @@
+.co-container {
+  width: 100%;
+  max-width: 800px;
+  margin: auto;
+  padding: 25px;
+  background: #f2f4f7;
+  font-family: "Outfit", sans-serif;
+}
+
+.co-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.co-section {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.co-subtitle {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+/* PRODUCT SUMMARY */
+.co-product {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.co-product-img {
+  width: 90px;
+  height: 90px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.co-product-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.co-product-price {
+  color: #3c7aff;
+  font-size: 1.2rem;
+  margin-top: 5px;
+}
+
+/* PRICE BREAKDOWN */
+.co-price-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0;
+  font-size: 1rem;
+}
+
+.co-total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 2px solid #ddd;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+/* ADDRESS */
+.co-address-option {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: #eef3ff;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: 0.25s;
+}
+
+.co-address-option:hover {
+  border-color: #3c7aff;
+}
+
+.co-address-option input {
+  margin-top: 5px;
+}
+
+.co-address-title {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.co-address-text {
+  opacity: 0.8;
+}
+
+.co-add-address-btn {
+  width: 100%;
+  padding: 12px;
+  background: #3c7aff;
+  color: white;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+.co-add-address-btn:hover {
+  background: #1f5eea;
+}
+
+/* PAYMENT METHOD */
+.co-radio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+}
+
+/* PLACE ORDER BUTTON */
+.co-place-btn {
+  width: 100%;
+  padding: 15px;
+  background: #000;
+  color: white;
+  font-size: 1.2rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  margin-top: 10px;
+}
+
+.co-place-btn:hover {
+  opacity: 0.85;
+}
+
+/* MODAL BACKDROP */
+.co-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999 !important;
+  padding: 20px; /* important for mobile */
+}
+
+/* THE IMPORTANT FIX */
+.co-modal-box {
+  background: #fff;
+  padding: 25px;
+  width: 90%;
+  max-width: 450px;
+  border-radius: 12px;
+  max-height: 90vh; /* LIMIT HEIGHT */
+  overflow-y: auto; /* ENABLE SCROLL */
+  scrollbar-width: thin; /* nicer scroll */
+}
+
+.co-modal-title {
+  font-size: 1.4rem;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+/* INPUT FIELDS */
+.co-input-group {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.co-input-group label {
+  font-size: 0.95rem;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.co-input {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+/* MODAL BUTTONS */
+.co-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.co-modal-cancel,
+.co-modal-save {
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.co-modal-cancel {
+  background: #ddd;
+  border: none;
+}
+
+.co-modal-save {
+  background: #3c7aff;
+  color: white;
+  border: none;
+}
+
+.co-modal-save:hover {
+  background: #1f5eea;
+}
+
+/* FULL RESPONSIVENESS */
+@media (max-width: 768px) {
+  .co-container {
+    padding: 15px;
+  }
+
+  .co-title {
+    font-size: 1.7rem;
+  }
+
+  .co-product {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .co-product-img {
+    width: 110px;
+    height: 110px;
+  }
+
+  .co-section {
+    padding: 15px;
+  }
+
+  .co-address-option {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .co-modal-box {
+    width: 95%;
+  }
+}
+
+@media (max-width: 480px) {
+  .co-title {
+    font-size: 1.5rem;
+  }
+
+  .co-product-img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .co-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .co-input {
+    padding: 8px;
+  }
+
+  .co-place-btn {
+    font-size: 1.1rem;
+    padding: 12px;
+  }
+}
