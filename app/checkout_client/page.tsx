@@ -158,7 +158,6 @@ export default function CheckoutPage() {
     </div>
 
 
-export const dynamic = "force-dynamic"; // forces client-only rendering
 
 export default function CheckoutPage() {
   return (
