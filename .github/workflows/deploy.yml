@@ -27,14 +27,15 @@ jobs:
           username: ${{ secrets.HOSTINGER_USER }}
           key: ${{ secrets.HOSTINGER_SSH_KEY }}
           source: |
-            package.json
-            package-lock.json
-            .next/**
-            public/**
-            next.config.js
-            styles/**
-            lib/**
-            app/**
+           package.json
+           package-lock.json
+           .next/**/* 
+           public/**/* 
+           next.config.js
+           styles/**/* 
+           lib/**/* 
+           app/**/*
+
           target: /var/www/frontend
 
       # Restart PM2 using the prebuilt files
