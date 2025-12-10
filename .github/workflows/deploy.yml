@@ -12,21 +12,23 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Copy files to VPS and Deploy
+      - name: Copy files to VPS via SSH
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.HOSTINGER_HOST }}
           username: ${{ secrets.HOSTINGER_USER }}
           key: ${{ secrets.HOSTINGER_SSH_KEY }}
           script: |
-            cd /var/www
-            # Ensure frontend folder exists
-            if [ ! -d "frontend" ]; then
-              mkdir frontend
-            fi
-            cd frontend
-            # Pull latest code (without building)
+            cd /var/www/frontend
+            # Make sure old build is removed
+            rm -rf .next
+            # Pull latest code
             git pull origin main
-            # Restart PM2 with existing prebuilt files
+            # Install only prod dependencies (optional)
+            npm ci --omit=dev
+            # Start app using prebuilt .next
             pm2 restart frontend || pm2 start npm --name "frontend" -- start
+
+
+
 
