@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import "../../styles/checkout.css";
 import { API, apiRoutes } from "../../lib/api";
+import { Suspense } from "react";
+import CheckoutClient from "./checkout_client";
 
 interface Product { _id: string }
 interface CartItem { product: Product; _id: string; name: string; price: number; qty: number; image: string }
@@ -154,8 +156,7 @@ export default function CheckoutPage() {
         </div>
       )}
     </div>
-import { Suspense } from "react";
-import CheckoutClient from "./checkout_client";
+
 
 export const dynamic = "force-dynamic"; // forces client-only rendering
 
