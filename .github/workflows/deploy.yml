@@ -33,5 +33,5 @@ jobs:
             cd /var/www/frontend
             npm ci
             npm run build
-            pm2 restart ecommerce-frontend || pm2 start npm --name "ecommerce-frontend" -- start
+            pm2 restart frontend || pm2 start npm --name "frontend" -- start
 
