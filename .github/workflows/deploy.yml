@@ -12,34 +12,23 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Build Next.js
-        run: npm run build
-
-      - name: Copy files to VPS and Deploy
+      - name: Copy files to VPS via SSH
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.HOSTINGER_HOST }}
           username: ${{ secrets.HOSTINGER_USER }}
           key: ${{ secrets.HOSTINGER_SSH_KEY }}
           script: |
-            cd /var/www
-            if [ ! -d "frontend" ]; then
-              git clone https://github.com/<your-org>/<your-frontend-repo>.git frontend
-            else
-              cd frontend
-              git pull origin main
-            fi
-            cd frontend
-            npm install
-            npm run build
+            cd /var/www/frontend
+            # Make sure old build is removed
+            rm -rf .next
+            # Pull latest code
+            git pull origin main
+            # Install only prod dependencies (optional)
+            npm ci --omit=dev
+            # Start app using prebuilt .next
             pm2 restart frontend || pm2 start npm --name "frontend" -- start
+
+
 
 
