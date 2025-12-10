@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import CheckoutClient from "./CheckoutClient"; // make sure the file path is correct
+import CheckoutClient from "./checkout_client"; // make sure the file path is correct
 
 export const dynamic = "force-dynamic"; // forces client-only rendering
 
