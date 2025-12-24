@@ -1,15 +1,28 @@
 import "../styles/home.css";
-import Product from "./products/page";
+// We keep your Product component exactly as it is
+import Product from "./products/page"; 
+
 export default function Home() {
   return (
-    <section className="homepage">
-      <div className="home">
-        <div className="home__content">
-          <h1>Welcome to ODmart 🛍️</h1>
-          <p>Find the best deals and shop smarter, not harder.</p>
+    <main className="homepage">
+      {/* Hero Section: The big visual banner at the top */}
+      <section className="hero">
+        <div className="hero__glow" /> {/* This creates the background light */}
+        
+        <div className="hero__content">
+          <h1 className="hero__title">
+            Welcome to <span className="text-gradient">ODmart</span>
+          </h1>
+          <p className="hero__subtitle">
+            Experience the future of shopping. Best deals, premium quality.
+          </p>
         </div>
-      </div>
-      <Product />
-    </section>
+      </section>
+
+      {/* Product Section: Your existing logic runs here */}
+      <section className="products-container">
+        <Product />
+      </section>
+    </main>
   );
 }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { API, apiRoutes } from "../../lib/api";
 import "../../styles/profile.css";
+import { MdEmail, MdPhone, MdEdit, MdDelete, MdSave } from "react-icons/md";
 
 interface Address {
   _id?: string;
@@ -37,9 +38,7 @@ export default function ProfilePage() {
   const [editing, setEditing] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // -----------------------------
-  // FETCH PROFILE & ADDRESSES
-  // -----------------------------
+  // --- RESTORED: FETCH PROFILE API ---
   const fetchProfile = async () => {
     setLoading(true);
     try {
@@ -52,12 +51,12 @@ export default function ProfilePage() {
     }
   };
 
+  // --- RESTORED: FETCH ADDRESSES API ---
   const fetchAddresses = async () => {
     setLoading(true);
     try {
       const res = await API.get(apiRoutes.address.list);
-      console.log("Addresses response:", res.data); // debug
-      setAddresses(res.data.addresses || []); // or res.data if the endpoint returns array directly
+      setAddresses(res.data.addresses || []);
     } catch (err) {
       console.error("Addresses fetch error:", err);
     } finally {
@@ -70,30 +69,25 @@ export default function ProfilePage() {
     fetchAddresses();
   }, []);
 
-  // -----------------------------
-  // HANDLE INPUT CHANGE
-  // -----------------------------
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // -----------------------------
-  // ADD / UPDATE ADDRESS
-  // -----------------------------
+  // --- RESTORED: ADD / UPDATE ADDRESS API ---
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       if (editing) {
-        // Update address
+        // Update existing address
         await API.put(apiRoutes.address.update(editing), form);
       } else {
-        // Add new address
+        // Create new address
         await API.post(apiRoutes.address.create, form);
       }
 
-      // Reset form
+      // Reset Form
       setForm({
         street: "",
         city: "",
@@ -104,37 +98,40 @@ export default function ProfilePage() {
         phone: "",
       });
       setEditing(null);
-
-      // Refresh addresses
+      
+      // Refresh Data
       fetchProfile();
+      fetchAddresses();
+      
     } catch (err) {
       console.error("Save address error:", err);
+      alert("Failed to save address.");
     } finally {
       setLoading(false);
     }
   };
 
-  // -----------------------------
-  // LOAD ADDRESS INTO FORM FOR EDIT
-  // -----------------------------
   const handleEdit = (id: string) => {
     const addr = addresses.find((a) => a._id === id);
     if (addr) {
       setForm(addr);
       setEditing(id);
     }
+    document.querySelector('.address-form-card')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // -----------------------------
-  // DELETE ADDRESS
-  // -----------------------------
+  // --- RESTORED: DELETE ADDRESS API ---
   const handleDelete = async (id: string) => {
+    if(!confirm("Are you sure you want to delete this address?")) return;
+    
     setLoading(true);
     try {
       await API.delete(apiRoutes.address.delete(id));
       fetchProfile();
+      fetchAddresses();
     } catch (err) {
       console.error("Delete address error:", err);
+      alert("Failed to delete address.");
     } finally {
       setLoading(false);
     }
@@ -142,118 +139,91 @@ export default function ProfilePage() {
 
   return (
     <section className="profile-container">
-      {" "}
-      <div className="profile-box">
-        {" "}
-        <h2>My Profile</h2>
-        {!user || loading ? (
-          <p>Loading...</p>
-        ) : (
-          <div className="user-info">
-            {" "}
-            <p>
-              <strong>Name:</strong> {user.name}
-            </p>{" "}
-            <p>
-              <strong>Email:</strong> {user.email}
-            </p>{" "}
-            <p>
-              <strong>Phone:</strong> {user.phone}
-            </p>{" "}
-          </div>
-        )}{" "}
+      
+      <div className="profile-header">
+         <h1>My Account</h1>
+         <p>Manage your profile and shipping details.</p>
       </div>
-      <div className="address-box">
-        <h2>My Addresses 📍</h2>
 
-        <form onSubmit={handleSubmit} className="address-form">
-          <input
-            type="text"
-            required
-            name="label"
-            placeholder="Label (Home, Work)"
-            value={form.label}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            required
-            name="street"
-            placeholder="Street"
-            value={form.street}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            required
-            name="city"
-            placeholder="City"
-            value={form.city}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            required
-            name="state"
-            placeholder="State"
-            value={form.state}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            required
-            name="postalCode"
-            placeholder="Postal Code"
-            value={form.postalCode}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            name="country"
-            placeholder="Country"
-            value={form.country}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            required
-            name="phone"
-            placeholder="Phone Number"
-            value={form.phone}
-            onChange={handleChange}
-          />
-
-          <button className="btn-primary" disabled={loading}>
-            {editing ? "Update Address" : "Add Address"}
-          </button>
-        </form>
-
-        <div className="address-list">
-          {addresses.length === 0 ? (
-            <p className="no-address">No addresses added.</p>
-          ) : (
-            addresses.map((addr) => (
-              <div key={addr._id} className="address-item">
-                <div>
-                  <p>{addr.street}</p>
-                  <p>
-                    {addr.city}, {addr.state} - {addr.postalCode}
-                  </p>
-                  <p>{addr.country}</p>
-                  {addr.label && <p>Label: {addr.label}</p>}
-                  <p>Phone: {addr.phone}</p>
+      <div className="profile-grid">
+          {/* LEFT COLUMN: User Info */}
+          <div className="profile-left">
+            <div className="user-card glass-panel">
+                <div className="avatar-circle">
+                    {user?.name?.charAt(0) || "U"}
                 </div>
+                <h2>{user?.name || "User"}</h2>
+                <div className="member-badge">Member</div>
 
-                <div className="actions">
-                  <button onClick={() => handleEdit(addr._id!)}>✏️ Edit</button>
-                  <button onClick={() => handleDelete(addr._id!)}>
-                    🗑️ Delete
-                  </button>
+                <div className="info-list">
+                    <div className="info-item">
+                        <MdEmail className="info-icon" />
+                        <span>{user?.email || "No Email"}</span>
+                    </div>
+                    <div className="info-item">
+                        <MdPhone className="info-icon" />
+                        <span>{user?.phone || "No Phone"}</span>
+                    </div>
                 </div>
-              </div>
-            ))
-          )}
-        </div>
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN: Addresses */}
+          <div className="profile-right">
+             <div className="address-section">
+                <h3>Saved Addresses</h3>
+                <div className="address-grid-list">
+                    {addresses.length === 0 ? (
+                        <p className="no-address">No addresses found. Add one below!</p>
+                    ) : (
+                        addresses.map((addr) => (
+                        <div key={addr._id} className="address-card glass-panel">
+                            <div className="addr-header">
+                                <span className="addr-label-badge">{addr.label || "Home"}</span>
+                                <div className="addr-actions">
+                                    <button onClick={() => handleEdit(addr._id!)} title="Edit"><MdEdit /></button>
+                                    <button onClick={() => handleDelete(addr._id!)} title="Delete" className="delete-btn"><MdDelete /></button>
+                                </div>
+                            </div>
+                            <p className="addr-text">{addr.street}</p>
+                            <p className="addr-text">{addr.city}, {addr.state} - {addr.postalCode}</p>
+                            <p className="addr-text country">{addr.country}</p>
+                            <p className="addr-phone"><MdPhone style={{marginRight: 5}}/> {addr.phone}</p>
+                        </div>
+                        ))
+                    )}
+                </div>
+             </div>
+
+             <div className="address-form-card glass-panel">
+                <h3>{editing ? "Edit Address" : "Add New Address"}</h3>
+                <form onSubmit={handleSubmit} className="address-form">
+                    <div className="form-row">
+                        <input type="text" name="label" placeholder="Label (e.g. Home)" value={form.label} onChange={handleChange} required />
+                        <input type="text" name="phone" placeholder="Phone Number" value={form.phone} onChange={handleChange} required />
+                    </div>
+                    <input type="text" name="street" placeholder="Street Address" value={form.street} onChange={handleChange} required />
+                    <div className="form-row">
+                        <input type="text" name="city" placeholder="City" value={form.city} onChange={handleChange} required />
+                        <input type="text" name="state" placeholder="State" value={form.state} onChange={handleChange} required />
+                    </div>
+                    <div className="form-row">
+                        <input type="text" name="postalCode" placeholder="Postal Code" value={form.postalCode} onChange={handleChange} required />
+                        <input type="text" name="country" placeholder="Country" value={form.country} onChange={handleChange} required />
+                    </div>
+
+                    <button className="btn-save-addr" disabled={loading}>
+                        <MdSave style={{fontSize: '1.2rem'}}/> 
+                        {editing ? "Update Address" : "Save Address"}
+                    </button>
+                    {editing && (
+                        <button type="button" className="btn-cancel-edit" onClick={() => {setEditing(null); setForm({street: "", city: "", state: "", postalCode: "", country: "", label: "", phone: ""})}}>
+                            Cancel
+                        </button>
+                    )}
+                </form>
+             </div>
+          </div>
       </div>
     </section>
   );

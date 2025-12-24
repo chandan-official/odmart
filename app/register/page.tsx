@@ -4,7 +4,7 @@
 import { useState } from "react";
 import Head from "next/head";
 import { API } from "../../lib/api";
-import "../../styles/form.css";
+import "../../styles/form.css"; // Ensures the new premium CSS is loaded
 import { useRouter } from "next/navigation";
 
 export default function AuthPage() {
@@ -75,21 +75,27 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen body-gradient flex flex-col">
-      {" "}
+    <div className="min-h-screen flex flex-col">
       <Head>
-        {" "}
-        <title>{isSignup ? "Sign Up - ODMART" : "Login - ODMART"}</title>{" "}
+        <title>{isSignup ? "Sign Up - ODMART" : "Login - ODMART"}</title>
       </Head>
-      <header className="w-full px-6 py-4 text-xl font-bold text-blue-600 bg-white shadow-md"></header>
+
+      {/* Main Auth Wrapper - Centers the Glass Card */}
       <main className="authWrapper">
         <div className={`authContainer ${isSignup ? "signupMode" : ""}`}>
+          
+          {/* Left Panel: The Blue Gradient Welcome Side */}
           <div className="leftPanel">
-            <h1>{isSignup ? "Welcome to ODMART" : "Welcome Back to ODMART"}</h1>
+            <h1>{isSignup ? "Join the Future" : "Welcome Back"}</h1>
           </div>
 
+          {/* Right Panel: The Dark Form Side */}
           <div className="rightPanel">
             <div className="formBox">
+              <h2 style={{ marginBottom: "24px", fontSize: "1.5rem", fontWeight: "600" }}>
+                {isSignup ? "Create Account" : "Sign In"}
+              </h2>
+              
               <form className="form" onSubmit={handleSubmit}>
                 {isSignup && (
                   <>
@@ -116,7 +122,7 @@ export default function AuthPage() {
                 <input
                   type="email"
                   name="email"
-                  placeholder="Email"
+                  placeholder="Email Address"
                   value={formData.email}
                   onChange={handleChange}
                   required
@@ -151,7 +157,11 @@ export default function AuthPage() {
                   : "Don’t have an account? "}
                 <span
                   onClick={toggleMode}
-                  style={{ cursor: "pointer", color: "#0070f3" }}
+                  style={{ 
+                    cursor: "pointer", 
+                    color: "var(--primary)", /* Uses the global theme blue */
+                    fontWeight: "bold" 
+                  }}
                 >
                   {isSignup ? "Login" : "Sign Up"}
                 </span>
@@ -160,7 +170,9 @@ export default function AuthPage() {
           </div>
         </div>
       </main>
-      <footer className="text-center py-5 text-sm text-gray-500">
+      
+      {/* Footer */}
+      <footer className="text-center py-5 text-sm" style={{ color: "var(--text-muted)" }}>
         © {new Date().getFullYear()} ODMART. All rights reserved.
       </footer>
     </div>

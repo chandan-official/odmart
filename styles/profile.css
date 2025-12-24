@@ -1,146 +1,281 @@
-/* MAIN LAYOUT */
+/* --- PREMIUM PROFILE DASHBOARD --- */
+
 .profile-container {
-  width: 92%;
-  max-width: 1100px;
-  margin: 30px auto;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: var(--font-jakarta), sans-serif;
+  min-height: 80vh;
+}
+
+.profile-header {
+  margin-bottom: 40px;
+}
+
+.profile-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--text-main);
+}
+
+.profile-header p {
+  color: var(--text-muted);
+}
+
+/* --- GRID LAYOUT --- */
+.profile-grid {
+  display: grid;
+  grid-template-columns: 350px 1fr; /* Fixed width for profile card, rest for addresses */
+  gap: 40px;
+  align-items: start;
+}
+
+/* --- LEFT COLUMN: USER CARD --- */
+.user-card {
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 40px 30px;
+  text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 2.2rem;
-  font-family: "Outfit", sans-serif;
+  align-items: center;
+  position: sticky;
+  top: 100px;
 }
 
-/* CARD WRAPPER */
-.profile-box,
-.address-box {
-  background: #ffffff;
-  padding: 25px 28px;
-  border-radius: 20px;
-  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e8e8e8;
-}
-
-.profile-box h2,
-.address-box h2 {
-  font-size: 1.6rem;
+.avatar-circle {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, var(--primary), #1e40af);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
   font-weight: 700;
-  margin-bottom: 18px;
-  color: #1f1f1f;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
 }
 
-/* USER INFO */
-.user-info p {
-  margin: 6px 0;
-  font-size: 1rem;
-  color: #333;
-}
-.user-info strong {
-  color: #3c7aff;
+.user-card h2 {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
 }
 
-/* ADDRESS FORM */
-.address-form {
-  margin-top: 10px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 15px;
-}
-
-.address-form input {
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 2px solid #d9d9d9;
-  font-size: 0.95rem;
-  transition: 0.3s ease;
-  outline: none;
-  background: #fafafa;
-}
-
-.address-form input:focus {
-  border-color: #3c7aff;
-  box-shadow: 0 0 6px rgba(60, 122, 255, 0.3);
-  background: #fff;
-}
-
-/* ADD BUTTON */
-.btn-primary {
-  grid-column: 1 / -1;
-  padding: 14px 0;
-  background: #3c7aff;
-  border: none;
-  border-radius: 14px;
-  color: #fff;
-  font-size: 1.1rem;
+.member-badge {
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 0.8rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: 0.25s ease;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.btn-primary:hover {
-  background: #2e6df9;
+.info-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.btn-primary:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  color: var(--text-muted);
 }
 
-/* ADDRESS LIST */
-.address-list {
-  margin-top: 20px;
+.info-icon {
+  font-size: 1.2rem;
+  color: var(--primary);
 }
 
-.address-item {
-  background: #ffffff;
-  padding: 18px 16px;
-  border-radius: 14px;
-  margin-bottom: 14px;
+/* --- RIGHT COLUMN: ADDRESSES --- */
+.profile-right {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.address-section h3, 
+.address-form-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.address-grid-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.address-card {
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 24px;
+  transition: transform 0.2s;
+  position: relative;
+}
+
+.address-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.addr-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  border: 1.5px solid #e4e7eb;
-  transition: 0.25s ease;
+  align-items: flex-start;
+  margin-bottom: 16px;
 }
 
-.address-item:hover {
-  border-color: #3c7aff;
-  transform: translateY(-2px);
+.addr-label-badge {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--primary);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
-.address-item p {
-  margin: 3px 0;
-  font-size: 0.95rem;
-  color: #333;
-}
-
-/* ACTION BUTTONS */
-.actions {
+.addr-actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
-.actions button {
-  background: #f0f3ff;
-  border: 1px solid #d1ddff;
-  padding: 6px 10px;
-  border-radius: 10px;
+.addr-actions button {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
   cursor: pointer;
-  transition: 0.2s ease;
+  font-size: 1.1rem;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.addr-actions button:hover { color: var(--text-main); }
+.addr-actions button.delete-btn:hover { color: #ef4444; }
+
+.addr-text {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+
+.addr-text.country {
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-main);
+}
+
+.addr-phone {
+  display: flex;
+  align-items: center;
   font-size: 0.9rem;
+  color: var(--text-muted);
+  opacity: 0.8;
 }
 
-.actions button:hover {
-  background: #3c7aff;
-  color: #fff;
-  border-color: #3c7aff;
+.no-address {
+  color: var(--text-muted);
+  font-style: italic;
 }
 
-/* MOBILE */
+/* --- ADDRESS FORM --- */
+.address-form-card {
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 30px;
+}
+
+.address-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.form-row input {
+  width: 100%;
+}
+
+.btn-save-addr {
+  background: var(--primary);
+  color: white;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s;
+  margin-top: 10px;
+}
+
+.btn-save-addr:hover {
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+}
+
+.btn-cancel-edit {
+  background: transparent;
+  color: var(--text-muted);
+  padding: 10px;
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn-cancel-edit:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-main);
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 900px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .user-card {
+    position: static; /* Remove sticky on mobile */
+    flex-direction: row; /* Horizontal layout on mobile */
+    text-align: left;
+    gap: 20px;
+    align-items: center;
+    padding: 24px;
+  }
+  
+  .avatar-circle {
+    width: 80px; height: 80px; font-size: 2.5rem; margin-bottom: 0;
+  }
+  
+  .member-badge { margin-bottom: 0; align-self: flex-start; }
+  .info-list { display: none; /* Hide details on mobile card to save space */ }
+}
+
 @media (max-width: 600px) {
-  .address-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .actions {
-    margin-top: 10px;
-  }
+  .user-card { flex-direction: column; text-align: center; }
+  .form-row { flex-direction: column; gap: 16px; }
+  .address-grid-list { grid-template-columns: 1fr; }
 }

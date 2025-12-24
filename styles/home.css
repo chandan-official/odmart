@@ -1,78 +1,80 @@
-@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Outfit:wght@100..900&display=swap");
-
-/* HERO SECTION */
-.home {
+/* --- The Hero Section --- */
+.hero {
+  position: relative;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  min-height: 45vh;
-  padding: 40px 20px;
+  justify-content: center;
   text-align: center;
-  color: #111;
-  border-radius: 50px;
-
-  background: linear-gradient(120deg, hsl(205, 100%, 50%), #ffffff);
+  padding: 120px 20px 80px; /* Top padding accounts for navbar */
+  overflow: hidden;
 }
 
-.home__content h1 {
-  font-size: 3.2rem;
-  font-family: "Bricolage Grotesque", sans-serif;
-  font-optical-sizing: auto;
-  margin-bottom: 10px;
+/* The Background Glow (Spotlight Effect) */
+.hero__glow {
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+  z-index: -1; /* Puts it behind the text */
+  pointer-events: none;
 }
 
-.home__content p {
+/* --- Typography --- */
+.hero__title {
+  font-size: 4rem; /* Big and bold */
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  letter-spacing: -0.02em;
+}
+
+/* The "ODmart" Gradient Text */
+.text-gradient {
+  background: linear-gradient(to bottom right, #fff 30%, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.hero__subtitle {
   font-size: 1.25rem;
-  margin-bottom: 25px;
-  font-family: "Outfit", sans-serif;
+  color: var(--text-muted);
+  max-width: 600px;
+  margin: 0 auto;
+  font-weight: 400;
+  line-height: 1.6;
 }
 
-.home__btn:hover {
-  background: #222;
+/* --- Product Container --- */
+/* This wraps your <Product /> component */
+.products-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  opacity: 0; /* Animation start state */
+  animation: fadeIn 0.8s ease-out forwards; /* Slide up animation */
+  animation-delay: 0.2s;
 }
 
-/* ==========================
-      RESPONSIVENESS
-========================== */
-
-@media (max-width: 900px) {
-  .home__content h1 {
-    font-size: 2.6rem;
+/* Smooth Fade In Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  .home__content p {
-    font-size: 1.1rem;
-  }
-}
-
-@media (max-width: 600px) {
-  .home {
-    padding: 30px 15px;
-    border-radius: 35px;
-    min-height: 20vh;
-    background: linear-gradient(90deg, hsl(205, 100%, 50%), #ffffff);
-  }
-
-  .home__content h1 {
-    font-size: 2rem;
-  }
-
-  .home__content p {
-    font-size: 1rem;
-  }
-
-  .home__btn {
-    padding: 10px 18px;
-    font-size: 0.95rem;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@media (max-width: 400px) {
-  .home__content h1 {
-    font-size: 1.7rem;
-  }
-
-  .home__btn {
-    font-size: 0.9rem;
-    padding: 8px 15px;
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+  .hero__title {
+    font-size: 2.5rem;
   }
 }

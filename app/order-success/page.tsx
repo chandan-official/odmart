@@ -2,21 +2,27 @@
 
 import { useRouter } from "next/navigation";
 import "../../styles/order-success.css";
+import { MdCheckCircle } from "react-icons/md"; // Using a clean icon instead of a GIF
 
 export default function OrderSuccessPage() {
   const router = useRouter();
 
   return (
     <div className="os-container">
-      <div className="os-box">
-        <img src="/success.gif" alt="success" className="os-icon" />
+      <div className="os-box glass-panel">
+        
+        {/* Animated Success Icon */}
+        <div className="icon-wrapper">
+            <MdCheckCircle className="os-icon" />
+            <div className="pulse-ring"></div>
+        </div>
 
-        <h1 className="os-title">Thank You for Shopping with Us! 🎉</h1>
+        <h1 className="os-title">Order Placed Successfully! 🎉</h1>
 
         <p className="os-msg">
-          Your order has been successfully placed. For all updates, please visit
-          the <strong>Orders</strong> page. All details will also be shared via{" "}
-          <strong>email/phone</strong>.
+          Thank you for shopping with us. Your order has been confirmed.
+          <br />
+          For updates, visit the <strong>Orders</strong> page. Details have been sent via <strong>Email/SMS</strong>.
         </p>
 
         <div className="os-btn-group">

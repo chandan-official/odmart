@@ -1,83 +1,132 @@
+/* --- PREMIUM SUCCESS PAGE --- */
+
 .os-container {
   width: 100%;
-  min-height: 80vh;
+  min-height: 80vh; /* Keeps it centered vertically */
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f2f4f7;
+  background: transparent; /* Inherits global dark bg */
   padding: 30px;
-  font-family: "Outfit", sans-serif;
+  font-family: var(--font-jakarta), sans-serif;
 }
 
 .os-box {
-  background: #fff;
-  padding: 35px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  max-width: 600px;
+  background: var(--bg-card);
+  padding: 50px 40px;
+  border-radius: 24px;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+  max-width: 550px;
+  width: 100%;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* --- ANIMATED ICON --- */
+.icon-wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .os-icon {
-  width: 120px;
-  margin-bottom: 20px;
+  font-size: 5rem;
+  color: #22c55e; /* Success Green */
+  z-index: 2;
+  background: #000; /* Hides the pulse line behind the circle */
+  border-radius: 50%;
 }
 
+.pulse-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.3);
+  animation: pulse 2s infinite;
+  z-index: 1;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  70% { transform: scale(1.5); opacity: 0; }
+  100% { transform: scale(0.9); opacity: 0; }
+}
+
+/* --- TYPOGRAPHY --- */
 .os-title {
   font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 15px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  color: var(--text-main);
+  background: linear-gradient(to right, #fff, #aaa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .os-msg {
-  font-size: 1.1rem;
-  opacity: 0.9;
-  margin-bottom: 30px;
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  margin-bottom: 40px;
   line-height: 1.6;
 }
 
+.os-msg strong {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+/* --- BUTTONS --- */
 .os-btn-group {
   display: flex;
-  justify-content: center;
-  gap: 15px;
+  flex-direction: column; /* Stack buttons on mobile for better touch targets */
+  gap: 16px;
 }
 
 .os-home-btn,
 .os-orders-btn {
-  padding: 12px 22px;
+  width: 100%;
+  padding: 16px;
   font-size: 1rem;
-  border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
   font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
 }
 
+/* Primary Button (Continue Shopping) */
 .os-home-btn {
-  background: #3c7aff;
+  background: var(--primary);
   color: white;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
 }
 
 .os-home-btn:hover {
-  background: #1f5eea;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
 }
 
+/* Secondary Button (View Orders) */
 .os-orders-btn {
-  background: #000;
-  color: white;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  border: 1px solid var(--glass-border);
 }
 
 .os-orders-btn:hover {
-  opacity: 0.85;
+  background: rgba(255, 255, 255, 0.1);
 }
 
-/* RESPONSIVE */
-@media (max-width: 600px) {
+/* --- RESPONSIVE --- */
+@media (min-width: 600px) {
   .os-btn-group {
-    flex-direction: column;
-  }
-
-  .os-home-btn,
-  .os-orders-btn {
-    width: 100%;
+    flex-direction: row; /* Side by side on larger screens */
   }
 }

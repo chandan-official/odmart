@@ -2,12 +2,11 @@
 "use client";
 
 import Image from "next/image";
-
 import Link from "next/link";
 import "../../styles/products.css";
 import { useEffect, useRef, useState } from "react";
-import { MdFavorite, MdOutlineFavoriteBorder } from "react-icons/md";
-import { api } from "../../lib/api";
+import { MdFavorite, MdOutlineFavoriteBorder, MdSearch, MdSort } from "react-icons/md";
+import { api } from "../../lib/api"; // Ensuring your API is imported
 
 interface ProductImage {
   url: string;
@@ -41,21 +40,31 @@ export default function ProductsPage() {
   };
 
   const fetchProducts = async (pageNumber: number) => {
-    if (!hasMore) return;
+    // If we have reached the end, don't fetch anymore
+    if (!hasMore && pageNumber > 1) return;
+    
     setLoading(true);
 
     try {
+      // --- RESTORED: REAL API CONNECTION ---
       const res = await api.getProducts(pageNumber, 12);
       const newProducts: Product[] = res.data.products;
 
+      // Logic: If no products returned, we are at the end
       if (!newProducts || newProducts.length === 0) {
         setHasMore(false);
+        setLoading(false);
         return;
       }
 
-      setProducts((prev) => [...prev, ...newProducts]);
+      // Logic: If page 1, replace data. If page > 1, append data.
+      if (pageNumber === 1) {
+          setProducts(newProducts);
+      } else {
+          setProducts((prev) => [...prev, ...newProducts]);
+      }
 
-      // Set initial main image for each product
+      // Logic: Set initial main image for each product
       newProducts.forEach((p) => {
         if (p.productImageurls && p.productImageurls.length > 0) {
           setMainImages((prev) => ({
@@ -75,6 +84,7 @@ export default function ProductsPage() {
     fetchProducts(1);
   }, []);
 
+  // Infinite Scroll Observer
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -101,7 +111,6 @@ export default function ProductsPage() {
     productId: string,
     imageUrl: string
   ) => {
-    // Stop link navigation when hovering over the thumbnail
     e.preventDefault();
     setMainImages((prev) => ({
       ...prev,
@@ -111,19 +120,27 @@ export default function ProductsPage() {
 
   return (
     <div className="products-page">
-      <div className="search-filter-bar">
-        <input
-          type="text"
-          className="search-input"
-          placeholder="Search for products…"
-        />
-        <select className="filter-select">
-          <option>Sort By</option>
-          <option value="price_asc">Price: Low to High</option>
-          <option value="price_desc">Price: High to Low</option>
-          <option value="newest">Newest</option>
-          <option value="popular">Popular</option>
-        </select>
+      {/* --- Controls Bar --- */}
+      <div className="controls-container">
+        <div className="search-wrapper">
+          <MdSearch className="search-icon" />
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Search premium products..."
+          />
+        </div>
+        
+        <div className="filter-wrapper">
+          <MdSort className="sort-icon" />
+          <select className="filter-select">
+            <option>Sort By</option>
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+            <option value="newest">Newest</option>
+            <option value="popular">Popular</option>
+          </select>
+        </div>
       </div>
 
       {/* --- Product Grid --- */}
@@ -132,112 +149,80 @@ export default function ProductsPage() {
           <Link
             href={`/product_page/${product._id}`}
             key={product._id}
-            className="product-link"
+            className="product-card-link"
           >
-            <div className="products-cards">
-              {/* Image and Thumbnails Section */}
-              <div className="product-image-container">
-                {/* Main Image */}
-                <div className="product-main-img">
-                  <Image
-                    src={mainImages[product._id] || "/placeholder.png"}
-                    alt={product.name}
-                    width={280}
-                    height={200}
-                    priority={true}
-                  />
-                </div>
+            <div className="product-card glass-panel">
+              
+              <div className="card-image-container">
+                {product.discount && (
+                  <span className="badge-discount">{product.discount}</span>
+                )}
+                
+                <Image
+                  src={mainImages[product._id] || "/placeholder.png"}
+                  alt={product.name}
+                  width={280}
+                  height={280}
+                  className="main-product-image"
+                  priority={true}
+                />
 
-                {/* Thumbnails */}
-                {product.productImageurls &&
-                  product.productImageurls.length > 1 && (
-                    <div className="thumbnails-wrapper">
-                      {product.productImageurls?.slice(0, 4).map((img, idx) => (
-                        <div
-                          key={idx}
-                          className={`thumbnail ${
-                            mainImages[product._id] === img.url ? "active" : ""
-                          }`}
-                          onMouseEnter={(e) =>
-                            handleThumbnailHover(e, product._id, img.url)
-                          }
-                        >
-                          <Image
-                            src={img.url}
-                            alt={`${product.name} thumbnail ${idx + 1}`}
-                            width={40}
-                            height={40}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                <button
+                  className={`wishlist-fab ${liked[product._id] ? "active" : ""}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleLike(product._id);
+                  }}
+                >
+                  {liked[product._id] ? <MdFavorite /> : <MdOutlineFavoriteBorder />}
+                </button>
               </div>
 
-              {/* Product Info Section */}
-              <div className="product-info">
-                <h3 className="product-title">{product.name}</h3>
+              {product.productImageurls && product.productImageurls.length > 1 && (
+                <div className="thumbnails-row">
+                  {product.productImageurls?.slice(0, 4).map((img, idx) => (
+                    <div
+                      key={idx}
+                      className={`thumb-dot ${mainImages[product._id] === img.url ? "active" : ""}`}
+                      onMouseEnter={(e) => handleThumbnailHover(e, product._id, img.url)}
+                    >
+                      <Image 
+                        src={img.url} 
+                        alt="thumb" 
+                        width={30} 
+                        height={30} 
+                        className="thumb-img"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
 
-                {/* Product Description */}
-                <p className="product-description">
-                  {product.description ||
-                    "A high-quality item offering premium comfort and durability."}
+              <div className="card-details">
+                <div className="card-header">
+                  <h3 className="product-name">{product.name}</h3>
+                  <div className="rating-pill">
+                     ⭐ {product.rating?.toFixed(1) || 4.5}
+                  </div>
+                </div>
+
+                <p className="product-desc-short">
+                  {product.description?.substring(0, 60) || "Premium quality item..."}...
                 </p>
 
-                {/* Price and Discount Details */}
-                <div className="price-details">
-                  <p className="current-price">₹{product.price}</p>
-
-                  {/* Compare price with faded color and parentheses */}
-                  {product.compareAtPrice &&
-                    product.compareAtPrice > product.price && (
-                      <span className="compare-price-wrapper">
-                        (
-                        <span className="strike-through faded-price">
-                          ₹{product.compareAtPrice}
-                        </span>
-                        )
-                      </span>
+                <div className="card-footer">
+                  <div className="price-block">
+                    <span className="price-current">₹{product.price.toLocaleString()}</span>
+                    {product.compareAtPrice && product.compareAtPrice > product.price && (
+                      <span className="price-old">₹{product.compareAtPrice.toLocaleString()}</span>
                     )}
-
-                  {product.discount && (
-                    <span className="discount-tag">{product.discount}</span>
+                  </div>
+                  
+                  {product.stock > 0 ? (
+                     <button className="btn-shop">Shop</button>
+                  ) : (
+                     <span className="out-of-stock-text" style={{color: '#ef4444', fontSize: '0.9rem', fontWeight: 'bold'}}>Out of Stock</span>
                   )}
-                </div>
-
-                {/* Rating and Stock */}
-                <div className="rating-stock">
-                  <p className="rating-text">
-                    ⭐ {product.rating?.toFixed(1) || 4.5}
-                  </p>
-                  <p
-                    className={`stock-status ${
-                      product.stock > 0 ? "in-stock" : "out-of-stock"
-                    }`}
-                  >
-                    {product.stock > 0 ? "In Stock" : "Out of Stock"}
-                  </p>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="btn-grp">
-                  <button className="add-to-cart">Shop Now</button>
-
-                  <button
-                    className={`wishlist-btn ${
-                      liked[product._id] ? "liked" : ""
-                    }`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      toggleLike(product._id);
-                    }}
-                  >
-                    {liked[product._id] ? (
-                      <MdFavorite />
-                    ) : (
-                      <MdOutlineFavoriteBorder />
-                    )}
-                  </button>
                 </div>
               </div>
             </div>
@@ -245,13 +230,11 @@ export default function ProductsPage() {
         ))}
       </div>
 
-      {/* Infinite Scroll Loader */}
-      <div ref={loaderRef} style={{ padding: "40px", textAlign: "center" }}>
-        {loading && hasMore && (
-          <span className="loading-text">Loading more products…</span>
-        )}
-        {!hasMore && (
-          <span className="all-loaded-text">🎉 All products loaded</span>
+      {/* --- Infinite Scroll Loader --- */}
+      <div ref={loaderRef} className="loader-container">
+        {loading && hasMore && <div className="spinner"></div>}
+        {!hasMore && products.length > 0 && (
+          <span className="end-text">🎉 You've reached the end</span>
         )}
       </div>
     </div>

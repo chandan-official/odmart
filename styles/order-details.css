@@ -1,215 +1,307 @@
+/* --- PREMIUM ORDER HISTORY (Obsidian Theme) --- */
+
 .od-container {
-  width: 100%;
-  max-width: 900px;
-  margin: auto;
-  padding: 25px;
-  font-family: "Outfit", sans-serif;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  min-height: 80vh;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.od-header {
+  margin-bottom: 40px;
 }
 
 .od-title {
-  font-size: 2rem;
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--text-main);
+}
+
+.od-header p {
+  color: var(--text-muted);
+}
+
+.loader-container {
+  padding: 40px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+/* --- ORDER CARD --- */
+.order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.od-card {
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 24px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+}
+
+.od-card:hover {
+  border-color: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Cancelled Card State */
+.od-card.cancelled-card {
+  opacity: 0.7;
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+/* HEADER */
+.od-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.od-id {
+  font-size: 1.1rem;
   font-weight: 700;
-  margin-bottom: 20px;
-}
-
-.od-section {
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.od-subtitle {
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin-bottom: 10px;
+  margin-bottom: 4px;
+  color: var(--text-main);
 }
 
 .od-date {
-  opacity: 0.7;
-}
-
-/* STATUS */
-.od-status {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 15px;
-}
-
-.od-tracker {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
-}
-
-.od-step {
-  width: 22%;
-  text-align: center;
-  padding: 10px;
   font-size: 0.9rem;
-  border-radius: 10px;
-  background: #eee;
+  color: var(--text-muted);
+}
+
+/* STATUS BADGES */
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 50px;
+  font-size: 0.85rem;
   font-weight: 600;
+  text-transform: capitalize;
 }
 
-.od-step.active {
-  background: #3c7aff;
-  color: white;
-}
+.status-badge.delivered { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+.status-badge.pending { background: rgba(251, 191, 36, 0.1); color: #fbbf24; }
+.status-badge.processing { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.status-badge.cancelled { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
-/* CANCEL BUTTON */
-.od-cancel-btn {
-  padding: 10px 15px;
-  background: #ff4d4d;
-  border: none;
-  color: white;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.od-cancel-btn:hover {
-  background: #d93636;
+.divider {
+  height: 1px;
+  background: var(--glass-border);
+  margin: 16px 0;
 }
 
 /* ITEMS */
-.od-item {
+.od-items {
   display: flex;
-  gap: 12px;
-  margin-bottom: 12px;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.od-item-img {
-  width: 70px;
-  height: 70px;
-  border-radius: 10px;
+.od-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.img-wrapper {
+  width: 60px;
+  height: 60px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.img-wrapper img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
-.od-item-name {
+.item-info {
+  flex: 1;
+}
+
+.item-name {
   font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 4px;
 }
 
-.od-item-price {
-  color: #3c7aff;
-  margin: 5px 0;
+.item-meta {
+  font-size: 0.9rem;
+  color: var(--text-muted);
 }
 
-.od-item-qty {
-  opacity: 0.8;
-}
-
-/* PAYMENT */
-.od-payment {
-  font-size: 1.1rem;
+.item-price {
   font-weight: 600;
+  font-size: 1rem;
 }
 
-/* BILL */
-.od-row,
-.od-total-row {
+/* FOOTER */
+.od-footer {
   display: flex;
   justify-content: space-between;
-  margin: 6px 0;
-}
-
-.od-total-row {
-  font-size: 1.2rem;
-  font-weight: 700;
-  border-top: 2px solid #ddd;
-  padding-top: 10px;
-}
-
-/* HELP */
-.od-help-text {
-  opacity: 0.85;
-}
-
-/* MODAL */
-.od-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.55);
-  display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 9999;
+  margin-top: 8px;
+}
+
+.total-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.total-block span:first-child {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.total-price {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-details, .btn-cancel {
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.btn-details {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-main);
+  border: 1px solid var(--glass-border);
+}
+
+.btn-details:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.btn-cancel {
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.btn-cancel:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+}
+
+/* --- MODAL --- */
+.od-modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 20px;
 }
 
 .od-modal-box {
-  background: #fff;
-  padding: 25px;
-  width: 90%;
-  max-width: 450px;
-  border-radius: 12px;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.od-modal-title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-.od-modal-label {
-  font-size: 0.95rem;
-  font-weight: 600;
-  margin-bottom: 5px;
-}
-
-.od-modal-input {
   width: 100%;
-  height: 110px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  padding: 12px;
-  font-size: 1rem;
-  resize: none;
+  max-width: 500px;
+  background: #111;
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
 }
 
-.od-modal-actions {
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h3 { margin: 0; font-size: 1.25rem; }
+.modal-header button { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+
+.modal-desc {
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.modal-desc strong { color: var(--text-main); }
+
+.modal-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.modal-textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--glass-border);
+  color: white;
+  padding: 12px;
+  border-radius: 10px;
+  min-height: 100px;
+  margin-bottom: 24px;
+  font-family: inherit;
+}
+
+.modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  margin-top: 15px;
+  gap: 12px;
 }
 
-.od-modal-cancel {
-  background: #ddd;
-  padding: 8px 14px;
-  border: none;
+.btn-modal-close {
+  padding: 10px 20px;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--glass-border);
   border-radius: 8px;
   cursor: pointer;
 }
 
-.od-modal-confirm {
-  background: #ff4d4d;
-  padding: 8px 14px;
-  border: none;
+.btn-modal-confirm {
+  padding: 10px 24px;
+  background: #ef4444;
   color: white;
+  border: none;
   border-radius: 8px;
-  cursor: pointer;
   font-weight: 600;
-}
-
-.od-modal-confirm:hover {
-  background: #d93636;
+  cursor: pointer;
 }
 
 /* RESPONSIVE */
 @media (max-width: 600px) {
-  .od-tracker {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .od-step {
-    width: 100%;
-  }
+  .od-card-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+  .od-footer { flex-direction: column; gap: 20px; align-items: flex-start; }
+  .action-buttons { width: 100%; justify-content: space-between; }
+  .btn-details, .btn-cancel { flex: 1; justify-content: center; }
 }

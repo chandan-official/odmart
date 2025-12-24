@@ -1,336 +1,148 @@
+/* --- PREMIUM LOGIN / REGISTER PAGE --- */
+
+/* 1. The Page Background */
+/* We inherit the global dark theme, but ensure full height alignment */
 .authWrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex: 1;
-  padding: 4rem 1rem;
+  min-height: 80vh; /* Centers the box vertically */
+  width: 100%;
+  padding: 20px;
 }
 
+/* 2. The Glass Card Container */
 .authContainer {
-  position: relative;
-  width: 90%;
-  max-width: 1000px;
-  height: 550px;
   display: flex;
-  border-radius: 20px;
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.25);
-  transition: all 0.8s ease-in-out;
+  width: 100%;
+  max-width: 900px;
+  background: var(--bg-card); /* Dark card background */
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+  transition: all 0.5s ease;
 }
 
-/* Left Panel */
+/* 3. The Left Panel (The Blue Welcome Side) */
 .leftPanel {
   flex: 1;
-  background: #3c7aff;
+  background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
   display: flex;
-  justify-content: center;
   align-items: center;
-  color: #fff;
-  text-align: center;
-  padding: 2rem;
-  transition: all 0.8s ease;
-  border-radius: 20px;
+  justify-content: center;
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Adding a subtle glow effect behind the text */
+.leftPanel::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+  animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .leftPanel h1 {
   font-size: 2.5rem;
   font-weight: 800;
-  margin-bottom: 1rem;
-  animation: fadeSlide 1.5s ease-in-out;
-}
-
-.leftPanel h2 {
-  font-size: 1.2rem;
-  font-weight: 500;
-  animation: fadeSlide 2s ease-in-out;
-}
-
-/* Right Panel */
-.rightPanel {
-  flex: 1;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.8s ease;
-}
-
-.formBox {
-  width: 80%;
+  color: #ffffff;
   text-align: center;
-  color: #3c7aff;
+  z-index: 2;
+  text-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-.formBox h2 {
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
-  color: #3c7aff;
-  font-weight: 600;
-}
-
-.form input {
-  width: 100%;
-  padding: 0.8rem;
-  margin-bottom: 1rem;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.4);
-  color: rgba(45, 70, 229, 0.6);
-  outline: none;
-  transition: border-color 0.3s ease;
-}
-
-.form input:focus {
-  border-color: rgba(45, 70, 229, 0.9);
-}
-
-.form button {
-  width: 100%;
-  padding: 0.8rem;
-  color: #3c7aff;
-  background: rgba(60, 122, 255, 0.1);
-  font-weight: 600;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.form button:hover {
-  background: rgba(45, 70, 229, 1);
-  color: #fff;
-}
-
-.formBox p {
-  margin-top: 1rem;
-  color: black;
-}
-
-.formBox span {
-  color: rgba(45, 70, 229, 0.9);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.formBox span:hover {
-  text-decoration: underline;
-}
-
-/* Signup Mode (Fixed) */
-.signupMode .leftPanel {
-  transform: translateX(100%);
-}
-
-.signupMode .rightPanel {
-  transform: translateX(-100%);
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  justify-content: center;
-  align-items: center;
-}
-
-.signupMode .formBox {
-  width: 80%;
-  color: white;
-  margin-left: 0;
-}
-
-.signupMode .rightPanel,
-.signupMode .leftPanel {
-  margin: 0;
-  padding: 0;
-}
-
-/* Smooth Animation */
-@keyframes fadeSlide {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.authContainer,
-.leftPanel,
+/* 4. The Right Panel (The Form) */
 .rightPanel {
-  transition: all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-}
-/* Divider line between normal and Google button */
-.divider {
+  flex: 1.2; /* Slightly wider than the left panel */
+  padding: 50px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
-  margin: 1.2rem 0;
-  color: rgba(45, 70, 229, 0.6);
-  font-weight: 500;
+  background: rgba(255, 255, 255, 0.02); /* Very subtle tint */
 }
 
-.divider span {
-  background: transparent;
-  padding: 0 10px;
-  position: relative;
-}
-
-.divider::before,
-.divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: rgba(45, 70, 229, 0.3);
-  margin: 0 10px;
-}
-
-/* Google button */
-.googleBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+/* 5. The Form Box & Inputs */
+.formBox {
   width: 100%;
-  padding: 0.8rem;
-  background: white;
-  color: rgba(45, 70, 229, 0.9);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Spacing between inputs */
+}
+
+/* --- TEXT VISIBILITY FIX --- */
+/* This specific rule forces the "Don't have an account?" text to be white */
+.formBox p {
+  color: var(--text-muted); /* Greyish white */
+  margin-top: 24px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+/* The "Sign Up" Link */
+.formBox p span {
   font-weight: 600;
+  margin-left: 5px;
+  transition: color 0.2s;
+}
+
+.formBox p span:hover {
+  text-decoration: underline;
+  color: var(--primary) !important;
+}
+
+/* --- BUTTON STYLING --- */
+button[type="submit"] {
+  background: var(--primary);
+  color: white;
   border: none;
-  border-radius: 10px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 10px rgba(45, 70, 229, 0.15);
+  margin-top: 10px;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); /* Blue glow */
 }
 
-.googleBtn:hover {
-  background: rgba(255, 255, 255, 0.95);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(45, 70, 229, 0.2);
+button[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
 }
 
-.googleIcon {
-  flex-shrink: 0;
-}
-
-@media (max-width: 992px) {
-  .authContainer {
-    height: auto;
-    flex-direction: column;
-    max-width: 700px;
-  }
-
-  .leftPanel,
-  .rightPanel {
-    width: 100%;
-    height: auto;
-    padding: 2rem;
-    border-radius: 20px;
-  }
-
-  .leftPanel h1 {
-    font-size: 2rem;
-  }
-
-  .leftPanel h2 {
-    font-size: 1rem;
-  }
-
-  .formBox {
-    width: 90%;
-  }
-}
-
-/* ----------- Small Screens (Phones) ----------- */
+/* --- MOBILE RESPONSIVENESS --- */
 @media (max-width: 768px) {
-  .authWrapper {
-    padding: 2rem 1rem;
-  }
-
   .authContainer {
-    width: 100%;
-    height: auto;
-    box-shadow: none;
-    padding: 0;
     flex-direction: column;
+    max-width: 400px;
   }
-
-  .leftPanel,
-  .rightPanel {
-    border-radius: 15px;
-    padding: 1.5rem;
+  
+  .leftPanel {
+    padding: 30px;
+    min-height: 150px;
   }
 
   .leftPanel h1 {
     font-size: 1.8rem;
   }
 
-  .leftPanel h2 {
-    font-size: 0.95rem;
-  }
-
-  .formBox h2 {
-    font-size: 1.5rem;
-  }
-
-  .form input,
-  .form button,
-  .googleBtn {
-    padding: 0.7rem;
-  }
-
-  .divider {
-    margin: 1rem 0;
-  }
-}
-
-/* ----------- Extra Small Screens (Small Phones) ----------- */
-@media (max-width: 480px) {
-  .authWrapper {
-    padding: 1.5rem 0.5rem;
-  }
-
-  .leftPanel {
-    padding: 1.2rem;
-  }
-
-  .leftPanel h1 {
-    font-size: 1.6rem;
-  }
-
-  .leftPanel h2 {
-    font-size: 0.85rem;
-  }
-
   .rightPanel {
-    padding: 1.2rem;
-  }
-
-  .formBox {
-    width: 100%;
-  }
-
-  .form input,
-  .form button,
-  .googleBtn {
-    padding: 0.65rem;
-    font-size: 0.9rem;
-  }
-
-  .googleBtn {
-    gap: 6px;
-  }
-
-  .authContainer {
-    border-radius: 12px;
-  }
-}
-
-/* ----------- Fix Signup Mode on Mobile ----------- */
-@media (max-width: 768px) {
-  .signupMode .leftPanel,
-  .signupMode .rightPanel {
-    transform: translateX(0); /* Disable sliding animation on small screens */
+    padding: 30px;
   }
 }
