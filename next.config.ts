@@ -9,7 +9,12 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "plus.unsplash.com", // Sometimes Unsplash redirects here
+        hostname: "plus.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "odmart.blr1.digitaloceanspaces.com",
+        pathname: "/products/**",
       },
     ],
   },

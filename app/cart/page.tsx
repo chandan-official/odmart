@@ -7,13 +7,21 @@ import { API } from "../../lib/api";
 import { AxiosError } from "axios";
 import { MdDeleteOutline, MdShoppingBag } from "react-icons/md";
 
+interface ProductImage {
+  url: string;
+}
+
+interface Product {
+  _id: string;
+  productImageurls?: ProductImage[];
+}
+
 interface CartItem {
-  quantity: number;
-  _id: string; // Cart Item ID or Product ID depending on your backend structure
+  _id: string;
   name: string;
   price: number;
-  qty?: number; // Handling potential inconsistency in naming
-  image: string;
+  qty: number;
+  product: Product;
 }
 
 export default function CartPage() {
@@ -27,11 +35,11 @@ export default function CartPage() {
       try {
         setLoading(true);
         const token = localStorage.getItem("authToken");
-        
+
         // If no token, user might need to login, but we'll try fetching anyway or handle empty
         if (!token) {
-            setLoading(false);
-            return;
+          setLoading(false);
+          return;
         }
 
         const res = await API.get("/cart/getCart", {
@@ -39,9 +47,9 @@ export default function CartPage() {
             Authorization: `Bearer ${token}`,
           },
         });
-        
+
         // Ensure we handle the response structure correctly
-        setCart(res.data.items || []);
+        setCart(res.data.cartItems || []);
       } catch (err) {
         console.error("Error fetching cart:", err);
       } finally {
@@ -53,20 +61,17 @@ export default function CartPage() {
   }, []);
 
   // --- RESTORED: UPDATE QUANTITY API ---
-  const updateQuantity = async (id: string, delta: number) => {
-    const item = cart.find((i) => i._id === id);
+  const updateQuantity = async (cartItemId: string, delta: number) => {
+    const item = cart.find((i) => i._id === cartItemId);
     if (!item) return;
 
-    // effective quantity handling
-    const currentQty = item.qty || item.quantity;
-    const newQuantity = Math.max(1, currentQty + delta);
+    const newQty = Math.max(1, item.qty + delta);
 
     try {
-      await API.put(`/cart/${id}`, { quantity: newQuantity });
-      
-      // Update local state to reflect change immediately
+      await API.put(`/cart/update/${cartItemId}`, { qty: newQty });
+
       setCart((prev) =>
-        prev.map((i) => (i._id === id ? { ...i, quantity: newQuantity, qty: newQuantity } : i))
+        prev.map((i) => (i._id === cartItemId ? { ...i, qty: newQty } : i))
       );
     } catch (err) {
       console.error("Error updating quantity:", err);
@@ -74,18 +79,20 @@ export default function CartPage() {
   };
 
   // --- RESTORED: REMOVE ITEM API ---
-  const handleRemove = async (itemId: string) => {
+  const handleRemove = async (cartItemId: string) => {
     try {
-      await API.delete(`/cart/${itemId}`);
-      setCart((prev) => prev.filter((item) => item._id !== itemId));
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        console.error(err.response?.data || err.message);
-        alert((err.response?.data as any)?.message || "Failed to remove item");
-      } else {
-        console.error(err);
-        alert("Failed to remove item");
-      }
+      const token = localStorage.getItem("authToken");
+
+      await API.delete(`/cart/clear/${cartItemId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setCart((prev) => prev.filter((item) => item._id !== cartItemId));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to remove item");
     }
   };
 
@@ -98,17 +105,18 @@ export default function CartPage() {
   };
 
   // Calculate total items helper
-  const getTotalItems = () => cart.reduce((acc, item) => acc + (item.qty || item.quantity), 0);
-  
-  // Calculate total price helper
-  const getTotalPrice = () => cart.reduce((acc, item) => acc + (item.qty || item.quantity) * item.price, 0);
+  const getTotalItems = () => cart.reduce((acc, item) => acc + item.qty, 0);
 
-  if (loading) return (
-    <div className="cart-loader">
-      <div className="spinner"></div>
-      <p>Loading your bag...</p>
-    </div>
-  );
+  const getTotalPrice = () =>
+    cart.reduce((acc, item) => acc + item.qty * item.price, 0);
+
+  if (loading)
+    return (
+      <div className="cart-loader">
+        <div className="spinner"></div>
+        <p>Loading your bag...</p>
+      </div>
+    );
 
   return (
     <div className="cart-page">
@@ -121,7 +129,7 @@ export default function CartPage() {
         <div className="empty-cart-container">
           <MdShoppingBag className="empty-icon" />
           <h2>Your bag is empty</h2>
-          <p>Looks like you haven't added anything yet.</p>
+          <p>Looks like you haven&apos;t added anything yet.</p>
         </div>
       ) : (
         <div className="cart-grid">
@@ -129,10 +137,12 @@ export default function CartPage() {
           <div className="cart-items-column">
             {cart.map((item) => (
               <div key={item._id} className="cart-item-card glass">
-                
                 <div className="item-image-wrapper">
                   <img
-                    src={item.image || "/placeholder.png"}
+                    src={
+                      item.product?.productImageurls?.[0]?.url ||
+                      "/placeholder.png"
+                    }
                     alt={item.name}
                     className="item-image"
                   />
@@ -153,13 +163,17 @@ export default function CartPage() {
 
                   <div className="item-controls-row">
                     <div className="qty-selector">
-                      <button onClick={() => updateQuantity(item._id, -1)}>−</button>
-                      <span>{item.qty || item.quantity}</span>
-                      <button onClick={() => updateQuantity(item._id, 1)}>+</button>
+                      <button onClick={() => updateQuantity(item._id, -1)}>
+                        −
+                      </button>
+                      <span>{item.qty}</span>
+                      <button onClick={() => updateQuantity(item._id, 1)}>
+                        +
+                      </button>
                     </div>
 
                     <p className="item-subtotal">
-                      Total: ₹{(item.price * (item.qty || item.quantity)).toLocaleString()}
+                      Total: ₹{(item.price * item.qty).toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -171,12 +185,12 @@ export default function CartPage() {
           <div className="cart-summary-column">
             <div className="summary-card glass">
               <h3>Order Summary</h3>
-              
+
               <div className="summary-row">
                 <span>Subtotal</span>
                 <span>₹{getTotalPrice().toLocaleString()}</span>
               </div>
-              
+
               <div className="summary-row">
                 <span>Shipping</span>
                 <span className="text-green">Free</span>

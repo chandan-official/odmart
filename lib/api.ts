@@ -21,6 +21,12 @@ API.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
+  // Prevent caching for GET requests
+  if (config.method === "get") {
+    config.headers["Cache-Control"] = "no-store";
+    config.headers["Pragma"] = "no-cache"; // for older browsers
+  }
+
   return config;
 });
 
@@ -45,8 +51,12 @@ export const apiRoutes = {
   },
 
   orders: {
-    list: "/orders",
+    list: "/orders/user/orders",
     single: (id: string) => `/orders/${id}`,
+    create: "/orders/create",
+    cancel: (id: string) => `/orders/${id}/cancel`,
+    all: "/orders/users",
+    getById: (id: string) => `/orders/${id}`,
   },
 
   users: {
@@ -55,11 +65,14 @@ export const apiRoutes = {
     create: "/users/create",
   },
   address: {
-    list: "/addresses/get",
-    create: "/addresses/add",
-    default: "/addresses/default/:id",
-    update: (id: string) => `/addresses/update/${id}`,
-    delete: (id: string) => `/addresses/delete/${id}`,
+    list: "profile/address/get",
+    create: "profile/address/add",
+    default: "profile/address/default/:id",
+    update: (id: string) => `profile/address/update/${id}`,
+    delete: (id: string) => `profile/address/delete/${id}`,
+  },
+  cart: {
+    remove: (id: string) => `/cart/clear/${id}`,
   },
 };
 
@@ -77,4 +90,6 @@ export const api = {
   getProductById: (id: string) => API.get(apiRoutes.products.single(id)),
 
   createProduct: (data: any) => API.post(apiRoutes.products.create, data),
+  removeCartItem: (cartItemId: string) =>
+    API.delete(apiRoutes.cart.remove(cartItemId)),
 };
